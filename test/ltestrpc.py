@@ -10,7 +10,7 @@ client = TBDeviceMqttClient("127.0.0.1", "DzV8P2RnMtmW9KMF0z2A")
 client.connect()
 print("Ok")
 # result = client.publish_data({"status": "on", "intensity": 20}, "v1/devices/me/attributes", 1)
-# client.send_rpc_call(method="setStatus", params={"status": "on"}, callback=callback)
+# client.send_rpc_call(method="setStatus", params={"statpythous": "on"}, callback=callback)
 result = client.send_telemetry(telemetry={"status": True, "intensity": 20})
 # success = result.get() == TBPublishInfo.TB_ERR_SUCCESS
 client.disconnect()
