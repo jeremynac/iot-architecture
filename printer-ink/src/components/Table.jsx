@@ -9,30 +9,17 @@ import {
   ValueAxis,
 } from "@devexpress/dx-react-chart-material-ui";
 import { Animation } from "@devexpress/dx-react-chart";
-
-const data = [
-  { colorName: "Fertilizer", amount: 2.525 },
-  { colorName: "Weed killer", amount: 3.018 },
-  { colorName: "Water", amount: 3.682 },
-];
-
-export default class Table extends React.PureComponent {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      data,
-    };
-  }
-
-  render() {
-    const { data: chartData } = this.state;
-
+export const Table = ({water, fertilizer, weedKiller}) =>  {
+  const data = React.useMemo(() => [
+    { colorName: "Water", amount: water },
+    { colorName: "Fertilizer", amount: fertilizer },
+    { colorName: "Weed killer", amount: weedKiller },
+  ], [water, fertilizer, weedKiller]);
     return (
       <Paper>
-        <Chart data={chartData}>
+        <Chart data={data}>
           <ArgumentAxis />
-          <ValueAxis max={7} />
+          <ValueAxis max={100} />
           <BarSeries
             valueField="amount"
             argumentField="colorName"
@@ -43,5 +30,4 @@ export default class Table extends React.PureComponent {
         </Chart>
       </Paper>
     );
-  }
-}
+    }
