@@ -1,0 +1,239 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Thermostat",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 10,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1438,
+          "layoutY": 376
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "check if delta > 15",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return msg.delta > 15;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1282,
+          "layoutY": 544
+        },
+        "type": "org.thingsboard.rule.engine.action.TbLogNode",
+        "name": "log delta",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return '\\nDelta\\n' +  msg.delta;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1713,
+          "layoutY": 376
+        },
+        "type": "org.thingsboard.rule.engine.action.TbCreateAlarmNode",
+        "name": "delta last 10 minutes",
+        "debugMode": false,
+        "configuration": {
+          "alarmType": "General Alarm",
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;",
+          "severity": "CRITICAL",
+          "propagate": false,
+          "useMessageAlarmData": false,
+          "dynamicSeverity": false,
+          "relationTypes": []
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1101,
+          "layoutY": 377
+        },
+        "type": "org.thingsboard.rule.engine.metadata.CalculateDeltaNode",
+        "name": "Last 10 minutes",
+        "debugMode": false,
+        "configuration": {
+          "inputValueKey": "temperature",
+          "outputValueKey": "delta",
+          "useCache": true,
+          "addPeriodBetweenMsgs": true,
+          "periodValueKey": "periodInMs",
+          "round": null,
+          "tellFailureIfDeltaIsNegative": true
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1134,
+          "layoutY": 285
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "test temperature value",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return msg.temperature == 20;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1412,
+          "layoutY": 287
+        },
+        "type": "org.thingsboard.rule.engine.action.TbCreateAlarmNode",
+        "name": "Temperature alarm",
+        "debugMode": false,
+        "configuration": {
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;",
+          "useMessageAlarmData": false,
+          "alarmType": "General Alarm",
+          "severity": "CRITICAL",
+          "propagate": false,
+          "relationTypes": [],
+          "dynamicSeverity": false
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 822,
+          "layoutY": 294
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save Timeseries",
+        "debugMode": false,
+        "configuration": {
+          "defaultTTL": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 824,
+          "layoutY": 221
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgAttributesNode",
+        "name": "Save Client Attributes",
+        "debugMode": false,
+        "configuration": {
+          "scope": "CLIENT_SCOPE"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 494,
+          "layoutY": 309
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbMsgTypeSwitchNode",
+        "name": "Message Type Switch",
+        "debugMode": false,
+        "configuration": {
+          "version": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1009,
+          "layoutY": 27
+        },
+        "type": "org.thingsboard.rule.engine.action.TbLogNode",
+        "name": "Log Other",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return '\\nIncoming message:\\n' + JSON.stringify(msg) + '\\nIncoming metadata:\\n' + JSON.stringify(metadata);"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 209,
+          "layoutY": 307
+        },
+        "type": "org.thingsboard.rule.engine.profile.TbDeviceProfileNode",
+        "name": "Device Profile Node",
+        "debugMode": false,
+        "configuration": {
+          "persistAlarmRulesState": false,
+          "fetchAlarmRulesStateOnStart": false
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 2,
+        "type": "True"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 1,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 0,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 5,
+        "type": "True"
+      },
+      {
+        "fromIndex": 6,
+        "toIndex": 3,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 7,
+        "toIndex": 4,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 7,
+        "toIndex": 9,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 8,
+        "toIndex": 9,
+        "type": "Other"
+      },
+      {
+        "fromIndex": 8,
+        "toIndex": 7,
+        "type": "Post attributes"
+      },
+      {
+        "fromIndex": 8,
+        "toIndex": 6,
+        "type": "Post telemetry"
+      },
+      {
+        "fromIndex": 10,
+        "toIndex": 8,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 10,
+        "toIndex": 9,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}
