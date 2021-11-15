@@ -1,0 +1,459 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "LightSensor",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 15,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1142,
+          "layoutY": 440
+        },
+        "type": "org.thingsboard.rule.engine.action.TbLogNode",
+        "name": "test",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return '\\nTest 2\\n'"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1716,
+          "layoutY": 437
+        },
+        "type": "org.thingsboard.rule.engine.action.TbLogNode",
+        "name": "test",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return '\\nTest\\n'"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1504,
+          "layoutY": 521
+        },
+        "type": "org.thingsboard.rule.engine.rpc.TbSendRPCRequestNode",
+        "name": "testrpc",
+        "debugMode": false,
+        "configuration": {
+          "timeoutInSeconds": 60
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1157,
+          "layoutY": 523
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "get Status",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "const message = {method: \"getStatus\", params: null}\nreturn {msg: message, metadata: metadata, msgType: \"RPC_CALL_FROM_SERVER_TO_DEVICE\"};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 806,
+          "layoutY": 371
+        },
+        "type": "org.thingsboard.rule.engine.rpc.TbSendRPCRequestNode",
+        "name": "testrpc",
+        "debugMode": false,
+        "configuration": {
+          "timeoutInSeconds": 60
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 812,
+          "layoutY": 444
+        },
+        "type": "org.thingsboard.rule.engine.rpc.TbSendRPCRequestNode",
+        "name": "testrpc",
+        "debugMode": false,
+        "configuration": {
+          "timeoutInSeconds": 60
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1443,
+          "layoutY": 196
+        },
+        "type": "org.thingsboard.rule.engine.action.TbLogNode",
+        "name": "test",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return 'Result\\n' + msg;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 500,
+          "layoutY": 55
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsSwitchNode",
+        "name": "switch message method",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "if (msg.method == \"getStatus\") {\n    return [\"getStatus\"]\n} else if (msg.method == \"getIntensity\") {\n    return [\"getIntensity\"]\n} else if (msg.method == \"setIntensity\") {\n    return [\"setIntensity\"]\n} else if (msg.method == \"setStatus\") {\n    return [\"setStatus\"]\n} else {\n    return []\n}"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 808,
+          "layoutY": 275
+        },
+        "type": "org.thingsboard.rule.engine.rpc.TbSendRPCRequestNode",
+        "name": "testrpc",
+        "debugMode": false,
+        "configuration": {
+          "timeoutInSeconds": 60
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1105,
+          "layoutY": 242
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "test if valid intensity",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return typeof msg == \"number\" && msg >= 0 && msg <= 100;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1110,
+          "layoutY": 100
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "test if valid status",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return msg == \"on\" || msg == \"off\""
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1312,
+          "layoutY": 16
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "success",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return {msg: msg, metadata: metadata, msgType: msgType};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1467,
+          "layoutY": 385
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "success",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return {msg: msg, metadata: metadata, msgType: msgType};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1461,
+          "layoutY": 297
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "error",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return {};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1456,
+          "layoutY": 91
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "error",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return {};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 90,
+          "layoutY": 560
+        },
+        "type": "org.thingsboard.rule.engine.action.TbLogNode",
+        "name": "log msg type",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return 'Incoming message:\\n' + JSON.stringify(msg) + '\\nIncoming msgtype:\\n' + msgType;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 144,
+          "layoutY": 692
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbMsgTypeSwitchNode",
+        "name": "type",
+        "debugMode": false,
+        "configuration": {
+          "version": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 810,
+          "layoutY": 35
+        },
+        "type": "org.thingsboard.rule.engine.rpc.TbSendRPCRequestNode",
+        "name": "testrpc",
+        "debugMode": false,
+        "configuration": {
+          "timeoutInSeconds": 60
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1052,
+          "layoutY": 33
+        },
+        "type": "org.thingsboard.rule.engine.action.TbCreateAlarmNode",
+        "name": "test1",
+        "debugMode": false,
+        "configuration": {
+          "alarmType": "General Alarm",
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;",
+          "severity": "CRITICAL",
+          "propagate": false,
+          "useMessageAlarmData": false,
+          "dynamicSeverity": false,
+          "relationTypes": []
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 882,
+          "layoutY": 523
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "save time series",
+        "debugMode": false,
+        "configuration": {
+          "defaultTTL": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 975,
+          "layoutY": 658
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgAttributesNode",
+        "name": "save data2",
+        "debugMode": false,
+        "configuration": {
+          "scope": "SHARED_SCOPE",
+          "notifyDevice": false
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 586,
+          "layoutY": 561
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "test light",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "if (msg.status && !(msg.status == \"on\" || msg.status == \"off\")) {\n    return false\n} else if (msg.intensity && !(msg.intensity >= 0 || msg.intensity <= 100)) {\n    return false\n} else if (msg.latitude && !(msg.latitude >= -90 && msg.latitude <= 90)) {\n    return false\n} else if (msg.longitude && !(msg.longitude >= -180 && msg.longitude <= 80)) {\n    return false\n} else {\n    return true\n}"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 2,
+        "toIndex": 1,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 2,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 7,
+        "toIndex": 17,
+        "type": "getStatus"
+      },
+      {
+        "fromIndex": 7,
+        "toIndex": 8,
+        "type": "getIntensity"
+      },
+      {
+        "fromIndex": 7,
+        "toIndex": 4,
+        "type": "setIntensity"
+      },
+      {
+        "fromIndex": 7,
+        "toIndex": 5,
+        "type": "setStatus"
+      },
+      {
+        "fromIndex": 8,
+        "toIndex": 9,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 9,
+        "toIndex": 13,
+        "type": "False"
+      },
+      {
+        "fromIndex": 9,
+        "toIndex": 13,
+        "type": "Failure"
+      },
+      {
+        "fromIndex": 9,
+        "toIndex": 12,
+        "type": "True"
+      },
+      {
+        "fromIndex": 9,
+        "toIndex": 6,
+        "type": "True"
+      },
+      {
+        "fromIndex": 9,
+        "toIndex": 6,
+        "type": "False"
+      },
+      {
+        "fromIndex": 9,
+        "toIndex": 6,
+        "type": "Failure"
+      },
+      {
+        "fromIndex": 10,
+        "toIndex": 6,
+        "type": "Failure"
+      },
+      {
+        "fromIndex": 10,
+        "toIndex": 6,
+        "type": "True"
+      },
+      {
+        "fromIndex": 10,
+        "toIndex": 6,
+        "type": "False"
+      },
+      {
+        "fromIndex": 10,
+        "toIndex": 14,
+        "type": "Failure"
+      },
+      {
+        "fromIndex": 10,
+        "toIndex": 14,
+        "type": "False"
+      },
+      {
+        "fromIndex": 10,
+        "toIndex": 11,
+        "type": "True"
+      },
+      {
+        "fromIndex": 15,
+        "toIndex": 16,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 16,
+        "toIndex": 7,
+        "type": "RPC Request to Device"
+      },
+      {
+        "fromIndex": 16,
+        "toIndex": 21,
+        "type": "Post telemetry"
+      },
+      {
+        "fromIndex": 16,
+        "toIndex": 21,
+        "type": "Post attributes"
+      },
+      {
+        "fromIndex": 17,
+        "toIndex": 18,
+        "type": "Failure"
+      },
+      {
+        "fromIndex": 17,
+        "toIndex": 10,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 19,
+        "toIndex": 3,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 19,
+        "toIndex": 0,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 21,
+        "toIndex": 19,
+        "type": "True"
+      },
+      {
+        "fromIndex": 21,
+        "toIndex": 20,
+        "type": "True"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}
