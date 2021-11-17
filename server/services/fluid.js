@@ -4,25 +4,22 @@ const server = coap.createServer({})
 
 
 // the default CoAP port is 5683
-const sendCoapRequestToThingsboard = async (type, consumedVolume, totalVolume, thingsboardAccessToken) => {
+const sendCoapRequestToThingsboard = async (type, consumedVolume, totalVolume, capacity, totalConsumption, thingsboardAccessToken) => {
     try {
-    // server.on('request', (req, res) => {
-    //     res.end('Hello ' + req.url.split('/')[1] + '\n')
-    //   })
-    // server.listen(1234,  () => {
+        console.log("Okservice")
         const req = coap.request({host: '127.0.0.1', pathname: `/api/v1/${thingsboardAccessToken}/telemetry`, method: 'post'})
-        console.log(thingsboardAccessToken)
         const payload = {
             type: type,
             consumedVolume: consumedVolume,
             totalVolume: totalVolume,
+            capacity: capacity,
+            totalConsumption: totalConsumption,
         }
         req.write(JSON.stringify(payload));
         req.on('response', (res) => {
-            // res.pipe(process.stdout)
+            console.log(res.payload)
         })
         req.end()
-    // })
     } catch(e) {
         console.log(e)
     }

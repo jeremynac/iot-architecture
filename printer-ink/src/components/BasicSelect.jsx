@@ -6,7 +6,7 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Button from "@material-ui/core/Button";
 
-export default function BasicSelect({onConsume, onChangeFluidType, fluidType}) {
+export default function BasicSelect({onConsume, onChangeFluidType, onAddFluid, fluidType, fluidQuantity}) {
   return (
     <Box sx={{ minWidth: 120 }}>
       <FormControl fullWidth>
@@ -22,8 +22,13 @@ export default function BasicSelect({onConsume, onChangeFluidType, fluidType}) {
           <MenuItem value={"weedKiller"}>Weed Killer</MenuItem>
           <MenuItem value={"water"}>Water</MenuItem>
         </Select>
-        <Box sx={{ mt: 1, ml: 20, mr: 20, mb: 3, width: 100 }}>
-          <Button variant="contained" onClick={onConsume}>Consume</Button>
+        <Box>
+          {fluidQuantity > 0 && <Box sx={{ mt: 1, ml: 20, mr: 20, mb: 3, width: 100 }}>
+            <Button variant="contained" onClick={onConsume}>Consume</Button>
+          </Box>}
+          {fluidQuantity < 100 && <Box sx={{ mt: 1, ml: 20, mr: 20, mb: 3, width: 100 }}>
+            <Button variant="contained" onClick={onAddFluid}>Refill</Button>
+          </Box>}
         </Box>
       </FormControl>
     </Box>

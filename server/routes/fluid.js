@@ -3,11 +3,12 @@ var router = express.Router();
 const {sendCoapRequestToThingsboard}  = require('../services/fluid')
 
 /* GET home page. */
-router.post('/', function(req, res, next) {
+router.post('/', async function(req, res, next) {
   const body = req.body
-  const { type, consumedVolume, totalVolume, thingsboardAccessToken } = body;
-  console.log(body)
-  return sendCoapRequestToThingsboard(type, consumedVolume, totalVolume, thingsboardAccessToken);
+  const { type, consumedVolume, totalVolume, capacity, totalConsumption, thingsboardAccessToken } = body;
+  console.log("Ok")
+  await sendCoapRequestToThingsboard(type, consumedVolume, totalVolume, capacity, totalConsumption, thingsboardAccessToken);
+  res.send("Ok")
 });
 
 module.exports = router;
