@@ -4,6 +4,7 @@ import BasicSelect from './BasicSelect'
 import { addFluid, consumeFluid, sendRandomData } from '../api/api'
 import { FluidGauges } from './FluidGauges'
 import { MachineDrawer } from './MachinesDrawer'
+import { TabPanel, TabContext } from '@mui/lab'
 
 const defaultQuantities = {
   fertilizer: 100,
@@ -173,15 +174,14 @@ export const Page = () => {
     )
   }
 
-  const getCurrentFluidQuantity = () => {
-    console.log(water, fertilizer, weedKiller)
+  const getCurrentFluidQuantity = (machineKey) => {
     switch (fluidType) {
       case 'water':
-        return water[selectedMachine]
+        return water[machineKey]
       case 'fertilizer':
-        return fertilizer[selectedMachine]
+        return fertilizer[machineKey]
       case 'weedKiller':
-        return weedKiller[selectedMachine]
+        return weedKiller[machineKey]
       default:
         return undefined
     }
@@ -229,33 +229,39 @@ export const Page = () => {
         isCompletelyRandomMode={completelyRandomMode}
         onToggleCompletelyRandomMode={onToggleCompletelyRandomMode}
       />
-      <Box sx={{ mt: 20, ml: 50, mr: 20, mb: 3, maxWidth: 1000 }}>
-        <FluidGauges
-          water={water[selectedMachine]}
-          fertilizer={fertilizer[selectedMachine]}
-          weedKiller={weedKiller[selectedMachine]}
-        />
-      </Box>
-      <Box
-        sx={{
-          mt: 10,
-          ml: 50,
-          mr: 20,
-          mb: 3,
-          maxWidth: 1000,
-          display: 'flex',
-          justifyContent: 'center'
-        }}
-      >
-        <BasicSelect
-          onChangeFluidType={setFluidType}
-          fluidType={fluidType}
-          onConsume={onConsume}
-          onAddFluid={onAddFluid}
-          fluidQuantity={getCurrentFluidQuantity()}
-          selectedFluidColor={getCurrentFluidColor()}
-        />
-      </Box>
+      <TabContext value={selectedMachine}>
+        {Object.keys(machines).map((machineKey) => (
+          <TabPanel key={machineKey} value={machineKey}>
+            <Box sx={{ mt: 20, ml: 50, mr: 20, mb: 3, maxWidth: 1000 }}>
+              <FluidGauges
+                water={water[machineKey]}
+                fertilizer={fertilizer[machineKey]}
+                weedKiller={weedKiller[machineKey]}
+              />
+            </Box>
+            <Box
+              sx={{
+                mt: 10,
+                ml: 50,
+                mr: 20,
+                mb: 3,
+                maxWidth: 1000,
+                display: 'flex',
+                justifyContent: 'center'
+              }}
+            >
+              <BasicSelect
+                onChangeFluidType={setFluidType}
+                fluidType={fluidType}
+                onConsume={onConsume}
+                onAddFluid={onAddFluid}
+                fluidQuantity={getCurrentFluidQuantity(machineKey)}
+                selectedFluidColor={getCurrentFluidColor()}
+              />
+            </Box>
+          </TabPanel>
+        ))}
+      </TabContext>
     </div>
   )
 }
