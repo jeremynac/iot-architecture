@@ -46,5 +46,5 @@ function getRandomData (validValues) {
 
 export const sendRandomData = async (validValues, machineToken) => {
   const randomData = getRandomData(validValues)
-  await updateTemperatureAndHumidity(validValues, machineToken)
+  await updateTemperatureAndHumidity(randomData.temperature, randomData.humidity, randomData.longitude, randomData.latitude, machineToken)
 }
