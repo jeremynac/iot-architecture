@@ -1,5 +1,5 @@
 import { Box } from '@mui/system'
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import BasicSelect from './BasicSelect'
 import { addFluid, consumeFluid, sendRandomData } from '../api/api'
 import { FluidGauges } from './FluidGauges'
@@ -12,8 +12,8 @@ const defaultQuantities = {
 }
 
 export const Page = () => {
-  const machines = [
-    {
+  const machines = {
+    machine1: {
       label: 'Machine 1',
       token: process.env.REACT_APP_THINGSBOARD_FLUID_SENSOR_TOKEN_1,
       geolocation: {
@@ -21,7 +21,7 @@ export const Page = () => {
         longitude: 2.349014
       }
     },
-    {
+    machine2: {
       label: 'Machine 2',
       token: process.env.REACT_APP_THINGSBOARD_FLUID_SENSOR_TOKEN_2,
       geolocation: {
@@ -29,7 +29,7 @@ export const Page = () => {
         longitude: 2.349014
       }
     },
-    {
+    machine3: {
       label: 'Machine 3',
       token: process.env.REACT_APP_THINGSBOARD_FLUID_SENSOR_TOKEN_3,
       geolocation: {
@@ -37,12 +37,24 @@ export const Page = () => {
         longitude: 2.349014
       }
     }
-  ]
+  }
   const [fluidType, setFluidType] = useState('water')
-  const [selectedMachine, setSelectedMachine] = useState(0)
-  const [water, setWater] = useState(defaultQuantities.water)
-  const [fertilizer, setFertilizer] = useState(defaultQuantities.fertilizer)
-  const [weedKiller, setWeedKiller] = useState(defaultQuantities.weedKiller)
+  const [selectedMachine, setSelectedMachine] = useState('machine1')
+  const [water, setWater] = useState({
+    machine1: defaultQuantities.water,
+    machine2: defaultQuantities.water,
+    machine3: defaultQuantities.water
+  })
+  const [fertilizer, setFertilizer] = useState({
+    machine1: defaultQuantities.fertilizer,
+    machine2: defaultQuantities.fertilizer,
+    machine3: defaultQuantities.fertilizer
+  })
+  const [weedKiller, setWeedKiller] = useState({
+    machine1: defaultQuantities.weedKiller,
+    machine2: defaultQuantities.weedKiller,
+    machine3: defaultQuantities.weedKiller
+  })
   const [randomMode, setRandomMode] = useState(false)
   const [completelyRandomMode, setCompletelyRandomMode] = useState(false)
   const [intervalId, setIntervalId] = useState()
@@ -70,9 +82,9 @@ export const Page = () => {
         sendData(
           validValues,
           machines[selectedMachine].token,
-          water,
-          fertilizer,
-          weedKiller
+          water[selectedMachine],
+          fertilizer[selectedMachine],
+          weedKiller[selectedMachine]
         ),
       3000
     )
@@ -89,23 +101,23 @@ export const Page = () => {
     let capacity
     let totalConsumption
     if (fluidType === 'water') {
-      addedVolume = defaultQuantities.water - water
-      totalVolume = water + addedVolume
+      addedVolume = defaultQuantities.water - water[selectedMachine]
+      totalVolume = water[selectedMachine] + addedVolume
       capacity = defaultQuantities.water
       totalConsumption = defaultQuantities.water - totalVolume
-      setWater(totalVolume)
+      setWater({ ...water, [selectedMachine]: totalVolume })
     } else if (fluidType === 'fertilizer') {
-      addedVolume = defaultQuantities.fertilizer - fertilizer
-      totalVolume = fertilizer + addedVolume
+      addedVolume = defaultQuantities.fertilizer - fertilizer[selectedMachine]
+      totalVolume = fertilizer[selectedMachine] + addedVolume
       capacity = defaultQuantities.fertilizer
       totalConsumption = defaultQuantities.fertilizer - totalVolume
-      setFertilizer(totalVolume)
+      setWeedKiller({ ...fertilizer, [selectedMachine]: totalVolume })
     } else if (fluidType === 'weedKiller') {
-      addedVolume = defaultQuantities.weedKiller - weedKiller
-      totalVolume = weedKiller + addedVolume
+      addedVolume = defaultQuantities.weedKiller - weedKiller[selectedMachine]
+      totalVolume = weedKiller[selectedMachine] + addedVolume
       capacity = defaultQuantities.weedKiller
       totalConsumption = defaultQuantities.weedKiller - totalVolume
-      setWeedKiller(totalVolume)
+      setWeedKiller({ ...weedKiller, [selectedMachine]: totalVolume })
     } else {
       return
     }
@@ -126,23 +138,26 @@ export const Page = () => {
     let capacity
     let totalConsumption
     if (fluidType === 'water') {
-      consumedVolume = water >= 10 ? 10 : water
-      totalVolume = water - consumedVolume
+      consumedVolume =
+        water[selectedMachine] >= 10 ? 10 : water[selectedMachine]
+      totalVolume = water[selectedMachine] - consumedVolume
       capacity = defaultQuantities.water
       totalConsumption = defaultQuantities.water - totalVolume
-      setWater(totalVolume)
+      setWater({ ...water, [selectedMachine]: totalVolume })
     } else if (fluidType === 'fertilizer') {
-      consumedVolume = fertilizer >= 10 ? 10 : fertilizer
-      totalVolume = fertilizer - consumedVolume
+      consumedVolume =
+        fertilizer[selectedMachine] >= 10 ? 10 : fertilizer[selectedMachine]
+      totalVolume = fertilizer[selectedMachine] - consumedVolume
       capacity = defaultQuantities.fertilizer
       totalConsumption = defaultQuantities.fertilizer - totalVolume
-      setFertilizer(totalVolume)
+      setWeedKiller({ ...fertilizer, [selectedMachine]: totalVolume })
     } else if (fluidType === 'weedKiller') {
-      consumedVolume = weedKiller >= 10 ? 10 : weedKiller
-      totalVolume = weedKiller - consumedVolume
+      consumedVolume =
+        weedKiller[selectedMachine] >= 10 ? 10 : weedKiller[selectedMachine]
+      totalVolume = weedKiller[selectedMachine] - consumedVolume
       capacity = defaultQuantities.weedKiller
       totalConsumption = defaultQuantities.weedKiller - totalVolume
-      setWeedKiller(totalVolume)
+      setWeedKiller({ ...weedKiller, [selectedMachine]: totalVolume })
     } else {
       return
     }
@@ -159,13 +174,14 @@ export const Page = () => {
   }
 
   const getCurrentFluidQuantity = () => {
+    console.log(water, fertilizer, weedKiller)
     switch (fluidType) {
       case 'water':
-        return water
+        return water[selectedMachine]
       case 'fertilizer':
-        return fertilizer
+        return fertilizer[selectedMachine]
       case 'weedKiller':
-        return weedKiller
+        return weedKiller[selectedMachine]
       default:
         return undefined
     }
@@ -215,9 +231,9 @@ export const Page = () => {
       />
       <Box sx={{ mt: 20, ml: 50, mr: 20, mb: 3, maxWidth: 1000 }}>
         <FluidGauges
-          water={water}
-          fertilizer={fertilizer}
-          weedKiller={weedKiller}
+          water={water[selectedMachine]}
+          fertilizer={fertilizer[selectedMachine]}
+          weedKiller={weedKiller[selectedMachine]}
         />
       </Box>
       <Box

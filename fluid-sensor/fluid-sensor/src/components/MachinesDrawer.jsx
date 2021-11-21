@@ -19,36 +19,25 @@ export const MachineDrawer = ({
   isCompletelyRandomMode
 }) => (
   <Drawer variant="persistent" anchor="left" open={true}>
-    {/* <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr'
-              ? (
-              <ChevronLeftIcon />
-                )
-              : (
-              <ChevronRightIcon />
-                )}
-          </IconButton>
-        </DrawerHeader> */}
     <Divider />
     <List>
       <ListItemButton
-        onClick={() => onChangeMachine(0)}
-        selected={selectedMachineIndex === 0}
+        onClick={() => onChangeMachine('machine1')}
+        selected={selectedMachineIndex === 'machine1'}
       >
-        {machines[0].label}
+        {machines.machine1.label}
       </ListItemButton>
       <ListItemButton
-        onClick={() => onChangeMachine(1)}
-        selected={selectedMachineIndex === 1}
+        onClick={() => onChangeMachine('machine2')}
+        selected={selectedMachineIndex === 'machine2'}
       >
-        {machines[1].label}
+        {machines.machine2.label}
       </ListItemButton>
       <ListItemButton
-        onClick={() => onChangeMachine(2)}
-        selected={selectedMachineIndex === 2}
+        onClick={() => onChangeMachine('machine3')}
+        selected={selectedMachineIndex === 'machine3'}
       >
-        {machines[2].label}
+        {machines.machine3.label}
       </ListItemButton>
 
       <ListItem>
