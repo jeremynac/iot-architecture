@@ -1,0 +1,1 @@
+mosquitto_pub -d -h "127.0.0.1" -t "v1/devices/me/attributes" -u "DzV8P2RnMtmW9KMF0z2A" -m "{"attribute1": "value1", "attribute2": true}"
