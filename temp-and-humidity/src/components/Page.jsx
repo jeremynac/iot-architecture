@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { sendRandomData, updateTemperatureAndHumidity } from '../api/api'
 import BasicCard from './BasicCard'
 import { MachineDrawer } from './MachinesDrawer'
+import BasicSlider from './BasicSlider'
 
 const defaultQuantities = { temperature: 100, humidity: 100 }
 
@@ -40,30 +41,14 @@ export const Page = () => {
   const [temperature, setTemperature] = useState(defaultQuantities.temperature)
   const [humidity, setHumidity] = useState(defaultQuantities.humidity)
 
-  const onIncreaseTemperature = async () => {
-    const increaseAmount = 10
-    const increasedTemperature = temperature + increaseAmount
+  const onChangeTemperature = async (increasedTemperature) => {
     setTemperature(increasedTemperature)
     await updateTemperatureAndHumidity(increasedTemperature, humidity, machines[selectedMachine].geolocation.longitude, machines[selectedMachine].geolocation.latitude, machines[selectedMachine].token)
   }
-  const onReduceTemperature = async () => {
-    const reduceAmount = temperature - 10 < -273.5 ? temperature + 273.5 : 10
-    const reducedTemperature = temperature - reduceAmount
-    setTemperature(reducedTemperature)
-    await updateTemperatureAndHumidity(reducedTemperature, humidity, machines[selectedMachine].geolocation.longitude, machines[selectedMachine].geolocation.latitude, machines[selectedMachine].token)
-  }
 
-  const onIncreaseHumidity = async () => {
-    const increaseAmount = 10
-    const increasedHumidity = humidity + increaseAmount
+  const onChangeHumidity = async (increasedHumidity) => {
     setHumidity(increasedHumidity)
     await updateTemperatureAndHumidity(temperature, increasedHumidity, machines[selectedMachine].geolocation.longitude, machines[selectedMachine].geolocation.latitude, machines[selectedMachine].token)
-  }
-  const onReduceHumidity = async () => {
-    const reduceAmount = 10
-    const reducedHumidity = humidity - reduceAmount
-    setHumidity(reducedHumidity)
-    await updateTemperatureAndHumidity(temperature, reducedHumidity, machines[selectedMachine].geolocation.longitude, machines[selectedMachine].geolocation.latitude, machines[selectedMachine].token)
   }
 
   const sendData = async (
@@ -129,8 +114,9 @@ export const Page = () => {
       sx={{ ml: 50, width: 1000 }}
       style={{ minHeight: '100vh' }}
     >
-      <Grid item xs={5}>
-        <BasicCard temperature={temperature} humidity={humidity} onIncreaseTemperature={onIncreaseTemperature} onReduceTemperature={onReduceTemperature} onIncreaseHumidity={onIncreaseHumidity} onReduceHumidity={onReduceHumidity}/>
+      <Grid item xs={6}>
+        <BasicSlider temperature={temperature} humidity={humidity} onChangeTemperature={onChangeTemperature} onChangeHumidity={onChangeHumidity} />
+
       </Grid>
     </Grid>
     </div>
