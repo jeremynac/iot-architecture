@@ -5,7 +5,7 @@ import BasicCard from './BasicCard'
 import { MachineDrawer } from './MachinesDrawer'
 import BasicSlider from './BasicSlider'
 
-const defaultQuantities = { temperature: 100, humidity: 100 }
+const defaultQuantities = { temperature: 30, humidity: 100 }
 
 export const Page = () => {
   const machines = {
