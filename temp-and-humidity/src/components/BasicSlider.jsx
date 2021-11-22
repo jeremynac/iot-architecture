@@ -41,7 +41,7 @@ export default function BasicSlider ({
       <Slider
           aria-label="Custom marks"
           onChange={(_, newValue) => onChangeTemperature(newValue)}
-          defaultValue={20}
+          value={temperature}
           getAriaValueText={valuetext}
           step={10}
           valueLabelDisplay="auto"
@@ -61,11 +61,11 @@ export default function BasicSlider ({
       <Slider
           aria-label="Custom marks"
           onChange={(_, newValue) => onChangeHumidity(newValue)}
-          defaultValue={20}
           getAriaValueText={valuetext}
           step={10}
           valueLabelDisplay="auto"
           marks={marks}
+          value={humidity}
         />
     </Grid>
 
