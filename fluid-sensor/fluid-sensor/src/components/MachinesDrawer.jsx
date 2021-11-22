@@ -19,7 +19,6 @@ export const MachineDrawer = ({
   isCompletelyRandomMode
 }) => (
   <Drawer variant="persistent" anchor="left" open={true}>
-    <Divider />
     <List>
       <ListItemButton
         onClick={() => onChangeMachine('machine1')}
@@ -39,7 +38,7 @@ export const MachineDrawer = ({
       >
         {machines.machine3.label}
       </ListItemButton>
-
+      <Divider />
       <ListItem>
         <FormControlLabel
           control={

@@ -8,7 +8,8 @@ import BasicSlider from './BasicSlider'
 const defaultQuantities = { temperature: 100, humidity: 100 }
 
 export const Page = () => {
-  const machines = [
+  const machines = {
+    machine1:
     {
       label: 'Indoor Temperature Sensor 1',
       token: process.env.REACT_APP_THINGSBOARD_TEMPERATURE_SENSOR_INDOOR_1_TOKEN,
@@ -17,6 +18,7 @@ export const Page = () => {
         longitude: 2.349014
       }
     },
+    machine2:
     {
       label: 'Indoor Temperature Sensor 2',
       token: process.env.REACT_APP_THINGSBOARD_TEMPERATURE_SENSOR_INDOOR_2_TOKEN,
@@ -25,6 +27,7 @@ export const Page = () => {
         longitude: 2.349014
       }
     },
+    machine3:
     {
       label: 'Outdoor Temperature Sensor 1',
       token: process.env.REACT_APP_THINGSBOARD_TEMPERATURE_SENSOR_OUTDOOR_1_TOKEN,
@@ -33,22 +36,22 @@ export const Page = () => {
         longitude: 2.349014
       }
     }
-  ]
-  const [selectedMachine, setSelectedMachine] = useState(0)
+  }
+  const [selectedMachine, setSelectedMachine] = useState('machine1')
   const [randomMode, setRandomMode] = useState(false)
   const [completelyRandomMode, setCompletelyRandomMode] = useState(false)
   const [intervalId, setIntervalId] = useState()
-  const [temperature, setTemperature] = useState(defaultQuantities.temperature)
-  const [humidity, setHumidity] = useState(defaultQuantities.humidity)
+  const [temperature, setTemperature] = useState({ machine1: defaultQuantities.temperature, machine2: defaultQuantities.temperature, machine3: defaultQuantities.temperature })
+  const [humidity, setHumidity] = useState({ machine1: defaultQuantities.humidity, machine2: defaultQuantities.humidity, machine3: defaultQuantities.humidity })
 
   const onChangeTemperature = async (increasedTemperature) => {
-    setTemperature(increasedTemperature)
-    await updateTemperatureAndHumidity(increasedTemperature, humidity, machines[selectedMachine].geolocation.longitude, machines[selectedMachine].geolocation.latitude, machines[selectedMachine].token)
+    setTemperature({ ...temperature, [selectedMachine]: increasedTemperature })
+    await updateTemperatureAndHumidity(increasedTemperature, humidity[selectedMachine], machines[selectedMachine].geolocation.longitude, machines[selectedMachine].geolocation.latitude, machines[selectedMachine].token)
   }
 
   const onChangeHumidity = async (increasedHumidity) => {
-    setHumidity(increasedHumidity)
-    await updateTemperatureAndHumidity(temperature, increasedHumidity, machines[selectedMachine].geolocation.longitude, machines[selectedMachine].geolocation.latitude, machines[selectedMachine].token)
+    setHumidity({ ...humidity, [selectedMachine]: increasedHumidity })
+    await updateTemperatureAndHumidity(temperature[selectedMachine], increasedHumidity, machines[selectedMachine].geolocation.longitude, machines[selectedMachine].geolocation.latitude, machines[selectedMachine].token)
   }
 
   const sendData = async (
@@ -115,7 +118,7 @@ export const Page = () => {
       style={{ minHeight: '100vh' }}
     >
       <Grid item xs={6}>
-        <BasicSlider temperature={temperature} humidity={humidity} onChangeTemperature={onChangeTemperature} onChangeHumidity={onChangeHumidity} />
+        <BasicSlider temperature={temperature[selectedMachine]} humidity={humidity[selectedMachine]} onChangeTemperature={onChangeTemperature} onChangeHumidity={onChangeHumidity} />
 
       </Grid>
     </Grid>
