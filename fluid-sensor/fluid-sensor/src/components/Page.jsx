@@ -111,7 +111,7 @@ export const Page = () => {
       totalVolume = fertilizer[selectedMachine] + addedVolume
       capacity = defaultQuantities.fertilizer
       totalConsumption = defaultQuantities.fertilizer - totalVolume
-      setWeedKiller({ ...fertilizer, [selectedMachine]: totalVolume })
+      setFertilizer({ ...fertilizer, [selectedMachine]: totalVolume })
     } else if (fluidType === 'weedKiller') {
       addedVolume = defaultQuantities.weedKiller - weedKiller[selectedMachine]
       totalVolume = weedKiller[selectedMachine] + addedVolume
@@ -143,6 +143,7 @@ export const Page = () => {
       totalVolume = water[selectedMachine] - consumedVolume
       capacity = defaultQuantities.water
       totalConsumption = defaultQuantities.water - totalVolume
+      console.log('Test1')
       setWater({ ...water, [selectedMachine]: totalVolume })
     } else if (fluidType === 'fertilizer') {
       consumedVolume =
@@ -150,13 +151,15 @@ export const Page = () => {
       totalVolume = fertilizer[selectedMachine] - consumedVolume
       capacity = defaultQuantities.fertilizer
       totalConsumption = defaultQuantities.fertilizer - totalVolume
-      setWeedKiller({ ...fertilizer, [selectedMachine]: totalVolume })
+      console.log('Test2')
+      setFertilizer({ ...fertilizer, [selectedMachine]: totalVolume })
     } else if (fluidType === 'weedKiller') {
       consumedVolume =
         weedKiller[selectedMachine] >= 10 ? 10 : weedKiller[selectedMachine]
       totalVolume = weedKiller[selectedMachine] - consumedVolume
       capacity = defaultQuantities.weedKiller
       totalConsumption = defaultQuantities.weedKiller - totalVolume
+      console.log('Test3')
       setWeedKiller({ ...weedKiller, [selectedMachine]: totalVolume })
     } else {
       return
