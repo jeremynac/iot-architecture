@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 //import 'package:mqtt_client/mqtt_browser_client.dart';
 import 'dart:async';
+import 'globals.dart' as globals;
 
 import 'package:front_light_sensor/mqtt.dart';
 import 'package:mqtt_client/mqtt_client.dart';
@@ -36,14 +37,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late Timer timer;
+  Timer? timer;
   int state = 0;
   MyMqttUse mqtt = MyMqttUse();
   MqttServerClient client =
       MqttServerClient.withPort('192.168.1.97', 'test', 1883);
 
   bool isSwitched = false;
-  double _currentSliderValue = 20;
+
   Color off = Colors.white;
   var on = Colors.yellow;
   var topic = 'v1/devices/me/telemetry';
@@ -51,25 +52,15 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     //mqtt.connectAppToServ(client, mqtt.access_token);
+    mqtt.getValuesFromServer(client, mqtt.access_token,
+        globals.intensity.round().toString(), globals.status, context);
 
-    // timer = Timer.periodic(
-    //     const Duration(seconds: 10),
-    //     (Timer t) => mqtt.getValuesFromServer(client, mqtt.access_token,
-    //         _currentSliderValue.round().toString(), isSwitched.toString()));
-    //connect(topic, client);
     super.initState();
   }
 
   @override
-  void dispose() {
-    timer.cancel();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    mqtt.getValuesFromServer(client, mqtt.access_token,
-        _currentSliderValue.round().toString(), isSwitched);
+    //double _currentSliderValue = globals.intensity;
     return Scaffold(
         appBar: AppBar(
           title: const Text('Light sensor setup'),
@@ -86,22 +77,26 @@ class _MyHomePageState extends State<MyHomePage> {
                         children: <Widget>[
                           const Text('Power ON / OFF the light :'),
                           Switch(
-                            value: isSwitched,
+                            value: globals.status,
                             onChanged: (value) async {
                               setState(() {
-                                isSwitched = value;
+                                globals.status = value;
 
-                                if (isSwitched == false) {
+                                if (globals.status == false) {
                                   print('OFF');
                                 }
 
-                                if (isSwitched == true) {
+                                if (globals.status == true) {
                                   print('ON');
                                 }
                                 // ignore: unrelated_type_equality_checks
                               });
-                              mqtt.updateActiveMode(client, topic,
-                                  isSwitched.toString(), mqtt.access_token);
+                              mqtt.updateActiveMode(
+                                  client,
+                                  topic,
+                                  globals.status.toString(),
+                                  mqtt.access_token,
+                                  globals.intensity.toString());
                             },
                             activeTrackColor: Colors.yellow,
                             activeColor: Colors.orangeAccent,
@@ -124,21 +119,22 @@ class _MyHomePageState extends State<MyHomePage> {
                         children: <Widget>[
                           const Text('Light intensity :'),
                           Slider(
-                            value: _currentSliderValue,
+                            value: globals.intensity,
                             min: 0,
                             max: 100,
                             divisions: 100,
-                            label: _currentSliderValue.round().toString(),
+                            label: globals.intensity.round().toString(),
                             onChanged: (double value) {
                               setState(() {
-                                _currentSliderValue = value;
-                                print(_currentSliderValue);
+                                globals.intensity = value;
+                                print(globals.intensity);
                               });
                               mqtt.updateIntensity(
                                   client,
                                   topic,
-                                  _currentSliderValue.round().toString(),
-                                  mqtt.access_token);
+                                  globals.intensity.round().toString(),
+                                  mqtt.access_token,
+                                  globals.status.toString());
                             },
                           )
                         ]),
@@ -165,10 +161,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                 shape: BoxShape.circle,
                                 border: Border.all(color: Colors.black),
                                 color: modifyColorIntensity(
-                                    isSwitched, _currentSliderValue)),
+                                    globals.status, globals.intensity)),
                           ),
-                          Text('Intensity : ' +
-                              _currentSliderValue.round().toString())
+                          Text(
+                              'Intensity : ${globals.intensity.round().toString()}')
                         ]),
                     height: 200,
                     width: 200,
@@ -180,7 +176,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       borderRadius: BorderRadius.circular(5.0),
                     ),
-                  )
+                  ),
+                  randomSendValidData(),
+                  randomSendInvalidData()
                 ]))
           ],
         ));
@@ -205,58 +203,25 @@ class _MyHomePageState extends State<MyHomePage> {
     return Colors.white;
   }
 
-  void onConnected() {
-    print('Connected');
+  Widget randomSendValidData() {
+    return TextButton(
+        onPressed: () {
+          timer = Timer.periodic(
+              const Duration(seconds: 10),
+              (Timer t) => mqtt.sendRandomValidData(
+                  client, mqtt.topicSend, mqtt.access_token));
+        },
+        child: const Text('valid data'));
   }
 
-// Disconnection
-  void onDisconnected() {
-    print('Disconnected');
-  }
-
-// Subscription to topic succeeded
-  void onSubscribed(String topic) {
-    print('Subscribed topic: $topic');
-  }
-
-// Failed to subscribe to topic
-  void onSubscribeFail(String topic) {
-    print('Failed to subscribe $topic');
-  }
-
-// Unsubscribed successfully
-  void onUnsubscribed(String topic) {
-    print('Unsubscribed topic: $topic');
-  }
-
-// PING response received
-  void pong() {
-    print('Ping response client callback invoked');
+  Widget randomSendInvalidData() {
+    return TextButton(
+        onPressed: () {
+          timer = Timer.periodic(
+              const Duration(seconds: 10),
+              (Timer t) => mqtt.sendRandomInvalidData(
+                  client, mqtt.topicSend, mqtt.access_token));
+        },
+        child: const Text('invalid data'));
   }
 }
-
-/// Set logging on if needed, defaults to off
-// Future<MqttServerClient> connect(var topic, MqttServerClient client) async {
-//   client.logging(on: false);
-
-//   final connMessage = MqttConnectMessage()
-//       .authenticateAs('vkaG6Mh70dxXDXPmhtkR', '')
-//       .startClean()
-//       .withWillQos(MqttQos.atMostOnce);
-//   print('Mosquitto client connecting....');
-//   client.connectionMessage = connMessage;
-//   try {
-//     await client.connect();
-//     if (client.connectionStatus!.state == MqttConnectionState.connected) {
-//       print('Mosquitto client connected');
-//     }
-//     //print('connected');
-//   } catch (e) {
-//     print('Exception: $e');
-//     client.disconnect();
-//   }
-//   print('EXAMPLE::Subscribing to the $topic topic');
-//   client.subscribe(topic, MqttQos.atMostOnce);
-
-//   return client;
-// }
