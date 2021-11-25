@@ -7,6 +7,7 @@ import 'package:front_light_sensor/mqtt.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:awesome_dropdown/awesome_dropdown.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,7 +45,9 @@ class _MyHomePageState extends State<MyHomePage> {
       MqttServerClient.withPort('192.168.1.97', 'test', 1883);
 
   bool isSwitched = false;
-
+  final bool _isPanDown = false;
+  bool _isDropDownOpened = false;
+  late bool _isBackPressedOrTouchedOutSide;
   Color off = Colors.white;
   var on = Colors.yellow;
   var topic = 'v1/devices/me/telemetry';
@@ -52,8 +55,10 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     //mqtt.connectAppToServ(client, mqtt.access_token);
-    mqtt.getValuesFromServer(client, mqtt.access_token,
-        globals.intensity.round().toString(), globals.status, context);
+    if (globals.token != '') {
+      mqtt.getValuesFromServer(client, globals.token,
+          globals.intensity.round().toString(), globals.status, context);
+    }
 
     super.initState();
   }
@@ -71,6 +76,29 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
+                  AwesomeDropDown(
+                    isPanDown: _isPanDown,
+                    dropDownList: globals.allDevices,
+                    dropDownIcon: const Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.grey,
+                      size: 23,
+                    ),
+                    selectedItem: globals.allDevices[0],
+                    onDropDownItemClick: (selectedItem) {
+                      globals.token = selectedItem;
+                      print(globals.token);
+                    },
+                    dropStateChanged: (isOpened) {
+                      _isDropDownOpened = isOpened;
+                      if (!isOpened) {
+                        _isBackPressedOrTouchedOutSide = false;
+                      }
+                    },
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
                   Container(
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -95,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   client,
                                   topic,
                                   globals.status.toString(),
-                                  mqtt.access_token,
+                                  globals.token,
                                   globals.intensity.toString());
                             },
                             activeTrackColor: Colors.yellow,
@@ -133,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   client,
                                   topic,
                                   globals.intensity.round().toString(),
-                                  mqtt.access_token,
+                                  globals.token,
                                   globals.status.toString());
                             },
                           )
