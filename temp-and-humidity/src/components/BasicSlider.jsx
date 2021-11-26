@@ -25,19 +25,20 @@ export default function BasicSlider ({
   onChangeHumidity
 }) {
   return (
+
     <Card sx={{ minWidth: 275 }}>
     <CardContent>
     <Grid container spacing={5}>
 
     <Grid item xs={6}>
           <Typography variant="h5" component="div">
-             Temperature
+            Temperature
           </Typography>
-            <Typography variant="h5" component="div">
-              {temperature} °C
-            </Typography>
-          </Grid>
-    <Grid item xs={6}>
+          <Typography variant="h5" component="div">
+            {temperature} °C
+          </Typography>
+    </Grid>
+    <Grid item xs={5}>
       <Slider
           aria-label="Custom marks"
           onChange={(_, newValue) => onChangeTemperature(newValue)}
@@ -49,15 +50,14 @@ export default function BasicSlider ({
         />
     </Grid>
     <Grid item xs={6}>
-          <Typography variant="h5" component="div">
-             humidity levels
-          </Typography>
-            <Typography variant="h5" component="div">
-              {humidity} °C
-            </Typography>
-
+        <Typography variant="h5" component="div">
+          humidity levels
+        </Typography>
+        <Typography variant="h5" component="div">
+          {humidity} %
+        </Typography>
     </Grid>
-    <Grid item xs={6}>
+    <Grid item xs={5}>
       <Slider
           aria-label="Custom marks"
           onChange={(_, newValue) => onChangeHumidity(newValue)}

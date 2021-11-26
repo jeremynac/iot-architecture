@@ -1,11 +1,11 @@
-import './App.css'
+import './App.scss'
 import { Page } from './components/Page'
 import React from 'react'
 require('dotenv').config()
 
 function App () {
   return (
-    <div className="App">
+    <div className={'App'}>
       <Page />
     </div>
   )

@@ -1,13 +1,26 @@
-import { Grid } from '@mui/material'
+import { Divider, Grid, Box, Text } from '@mui/material'
 import React, { useState } from 'react'
 import { sendRandomData, updateTemperatureAndHumidity } from '../api/api'
 import BasicCard from './BasicCard'
 import { MachineDrawer } from './MachinesDrawer'
 import BasicSlider from './BasicSlider'
+import { MachineCard } from './MachineCard'
+import { MachineSwitch } from './MachineSwitch'
+
+import { Background } from './Background'
+import { makeStyles } from '@material-ui/core/styles'
+import '../App.scss'
 
 const defaultQuantities = { temperature: 30, humidity: 100 }
+const useStyles = makeStyles({
+  root: {
+    backgroundColor: 'black'
+  }
+})
 
 export const Page = () => {
+  const classes = useStyles()
+
   const machines = {
     machine1:
     {
@@ -97,31 +110,48 @@ export const Page = () => {
     }
     setCompletelyRandomMode(value)
   }
-
+  const selectClassname = async () => {
+    if (selectedMachine === 'machine1') {
+      return 'lol'
+    } else { return 'test' }
+  }
   return (
-    <div>
-      <MachineDrawer
-        selectedMachineIndex={selectedMachine}
-        onChangeMachine={setSelectedMachine}
-        machines={machines}
-        isRandomMode={randomMode}
-        onToggleRandomMode={onToggleRandomMode}
-        isCompletelyRandomMode={completelyRandomMode}
-        onToggleCompletelyRandomMode={onToggleCompletelyRandomMode}
-      />
+    <div >
+      <h1>{selectClassname}</h1>
+
       <Grid
-      container
-      spacing={0}
-      alignItems="center"
-      justifyContent="center"
-      sx={{ ml: 50, width: 1000 }}
-      style={{ minHeight: '100vh' }}
-    >
-      <Grid item xs={6}>
-        <BasicSlider temperature={temperature[selectedMachine]} humidity={humidity[selectedMachine]} onChangeTemperature={onChangeTemperature} onChangeHumidity={onChangeHumidity} />
+        container
+        classes={classes.paper }
+        alignItems="center"
+        justifyContent="center"
+        style={{ minHeight: '100vh' }}
+      >
+        <Grid item xs={3} >
+
+         <MachineSwitch isRandomMode={randomMode}
+            onToggleRandomMode={onToggleRandomMode}
+            isCompletelyRandomMode={completelyRandomMode}
+            onToggleCompletelyRandomMode={onToggleCompletelyRandomMode}/>
+            </Grid>
+            <Box sx={{ m: 4 }} />
+
+        <Grid item xs={6} >
+          <MachineCard
+            selectedMachineIndex={selectedMachine}
+            onChangeMachine={setSelectedMachine}
+            machines={machines}
+            isRandomMode={randomMode}
+            onToggleRandomMode={onToggleRandomMode}
+            isCompletelyRandomMode={completelyRandomMode}
+            onToggleCompletelyRandomMode={onToggleCompletelyRandomMode}
+          />
+          <Box sx={{ m: 4 }} />
+
+          <BasicSlider temperature={temperature[selectedMachine]} humidity={humidity[selectedMachine]} onChangeTemperature={onChangeTemperature} onChangeHumidity={onChangeHumidity} />
+
+        </Grid>
 
       </Grid>
-    </Grid>
     </div>
   )
 }
