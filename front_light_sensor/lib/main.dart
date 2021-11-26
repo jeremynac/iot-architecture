@@ -1,13 +1,9 @@
 // ignore_for_file: avoid_print
 //import 'package:mqtt_client/mqtt_browser_client.dart';
 import 'dart:async';
-import 'globals.dart' as globals;
-
-import 'package:front_light_sensor/mqtt.dart';
-import 'package:mqtt_client/mqtt_client.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:front_light_sensor/store/mqtt_store.dart';
 import 'package:flutter/material.dart';
-import 'package:mqtt_client/mqtt_server_client.dart';
-import 'package:awesome_dropdown/awesome_dropdown.dart';
 
 void main() {
   runApp(const MyApp());
@@ -39,177 +35,178 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Timer? timer;
-  int state = 0;
-  MyMqttUse mqtt = MyMqttUse();
-  MqttServerClient client =
-      MqttServerClient.withPort('192.168.1.97', 'test', 1883);
+  late final MqttStore _mqttStore;
 
-  bool isSwitched = false;
-  final bool _isPanDown = false;
-  bool _isDropDownOpened = false;
-  late bool _isBackPressedOrTouchedOutSide;
-  Color off = Colors.white;
-  var on = Colors.yellow;
-  var topic = 'v1/devices/me/telemetry';
   @override
-  void initState() {
-    // TODO: implement initState
-    //mqtt.connectAppToServ(client, mqtt.access_token);
-    if (globals.token != '') {
-      mqtt.getValuesFromServer(client, globals.token,
-          globals.intensity.round().toString(), globals.status, context);
-    }
-
-    super.initState();
+  void didChangeDependencies() {
+    _mqttStore = MqttStore();
+    _mqttStore.initialize();
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    //double _currentSliderValue = globals.intensity;
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Light sensor setup'),
-        ),
-        body: ListView(
+    return Observer(
+        builder: (_) => Scaffold(
+            bottomNavigationBar: _buildBottomBar(context),
+            appBar: AppBar(
+              title: Text(
+                  "Light sensor setup: ${_mqttStore.currentlySelectedDeviceKey}"),
+              backgroundColor:
+                  _mqttStore.currentlySelectedDeviceKey == "Device1"
+                      ? Colors.red
+                      : _mqttStore.currentlySelectedDeviceKey == "Device2"
+                          ? Colors.green
+                          : Colors.blue,
+            ),
+            body: ListView(
+              children: <Widget>[
+                Center(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                      _buildStatusButton(context),
+                      _buildIntensityButton(context),
+                      _buildLightIndicator(context),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      randomSendValidData(),
+                      randomSendInvalidData()
+                    ]))
+              ],
+            )));
+  }
+
+  Widget _buildBottomBar(BuildContext context) {
+    return BottomNavigationBar(
+      items: {
+        for (MapEntry<String, String> device in _mqttStore.devices.entries)
+          _buildBottomBarItem(context, device)
+      }.toList(),
+      onTap: _mqttStore.changeDevice,
+      selectedLabelStyle: TextStyle(
+        color: _mqttStore.currentlySelectedDeviceKey == "Device1"
+            ? Colors.red
+            : _mqttStore.currentlySelectedDeviceKey == "Device2"
+                ? Colors.green
+                : Colors.blue,
+      ),
+      currentIndex: _mqttStore.currentDeviceIndex,
+    );
+  }
+
+  BottomNavigationBarItem _buildBottomBarItem(
+    BuildContext context,
+    MapEntry<String, String> device,
+  ) {
+    return BottomNavigationBarItem(
+      icon: Icon(
+        Icons.lightbulb,
+        color: _mqttStore.currentlySelectedDeviceKey != device.key
+            ? Colors.grey
+            : device.key == "Device1"
+                ? Colors.red
+                : device.key == "Device2"
+                    ? Colors.green
+                    : Colors.blue,
+      ),
+      label: device.key,
+    );
+  }
+
+  Widget _buildLightIndicator(BuildContext context) {
+    return Container(
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                  AwesomeDropDown(
-                    isPanDown: _isPanDown,
-                    dropDownList: globals.allDevices,
-                    dropDownIcon: const Icon(
-                      Icons.arrow_drop_down,
-                      color: Colors.grey,
-                      size: 23,
-                    ),
-                    selectedItem: globals.allDevices[0],
-                    onDropDownItemClick: (selectedItem) {
-                      globals.token = selectedItem;
-                      print(globals.token);
-                    },
-                    dropStateChanged: (isOpened) {
-                      _isDropDownOpened = isOpened;
-                      if (!isOpened) {
-                        _isBackPressedOrTouchedOutSide = false;
-                      }
-                    },
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          const Text('Power ON / OFF the light :'),
-                          Switch(
-                            value: globals.status,
-                            onChanged: (value) async {
-                              setState(() {
-                                globals.status = value;
+            const Text('Light status :'),
+            Observer(
+                builder: (_) => Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.black),
+                          color: modifyColorIntensity(
+                              _mqttStore.status, _mqttStore.intensity)),
+                    )),
+            Observer(
+                builder: (_) => Text(
+                    'Intensity : ${_mqttStore.intensity.round().toString()}'))
+          ]),
+      height: 200,
+      width: 200,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        border: Border.all(
+          color: Colors.black,
+          width: 2.0,
+        ),
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+    );
+  }
 
-                                if (globals.status == false) {
-                                  print('OFF');
-                                }
+  Widget _buildIntensityButton(BuildContext context) {
+    return Container(
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text('Light intensity :'),
+            Observer(
+                builder: (_) => Slider(
+                      value: _mqttStore.intensity,
+                      min: 0,
+                      max: 100,
+                      divisions: 100,
+                      label: _mqttStore.intensity.round().toString(),
+                      onChanged: (double value) {
+                        _mqttStore.updateIntensity(value);
+                      },
+                      onChangeEnd: (double value) {
+                        _mqttStore.updateServerIntensity(value);
+                      },
+                    ))
+          ]),
+      height: 200,
+      width: 200,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        border: Border.all(
+          color: Colors.black,
+          width: 2.0,
+        ),
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+    );
+  }
 
-                                if (globals.status == true) {
-                                  print('ON');
-                                }
-                                // ignore: unrelated_type_equality_checks
-                              });
-                              mqtt.updateActiveMode(
-                                  client,
-                                  topic,
-                                  globals.status.toString(),
-                                  globals.token,
-                                  globals.intensity.toString());
-                            },
-                            activeTrackColor: Colors.yellow,
-                            activeColor: Colors.orangeAccent,
-                          )
-                        ]),
-                    height: 200,
-                    width: 200,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 2.0,
-                      ),
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                  ),
-                  Container(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          const Text('Light intensity :'),
-                          Slider(
-                            value: globals.intensity,
-                            min: 0,
-                            max: 100,
-                            divisions: 100,
-                            label: globals.intensity.round().toString(),
-                            onChanged: (double value) {
-                              setState(() {
-                                globals.intensity = value;
-                                print(globals.intensity);
-                              });
-                              mqtt.updateIntensity(
-                                  client,
-                                  topic,
-                                  globals.intensity.round().toString(),
-                                  globals.token,
-                                  globals.status.toString());
-                            },
-                          )
-                        ]),
-                    height: 200,
-                    width: 200,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 2.0,
-                      ),
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                  ),
-                  Container(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          const Text('Light status :'),
-                          Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(color: Colors.black),
-                                color: modifyColorIntensity(
-                                    globals.status, globals.intensity)),
-                          ),
-                          Text(
-                              'Intensity : ${globals.intensity.round().toString()}')
-                        ]),
-                    height: 200,
-                    width: 200,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 2.0,
-                      ),
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                  ),
-                  randomSendValidData(),
-                  randomSendInvalidData()
-                ]))
-          ],
-        ));
+  Widget _buildStatusButton(BuildContext context) {
+    return Container(
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text('Power ON / OFF the light :'),
+            Observer(
+                builder: (_) => Switch(
+                      value: _mqttStore.status,
+                      onChanged: _mqttStore.updateServerStatus,
+                      activeTrackColor: Colors.yellow,
+                      activeColor: Colors.orangeAccent,
+                    ))
+          ]),
+      height: 200,
+      width: 200,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        border: Border.all(
+          color: Colors.black,
+          width: 2.0,
+        ),
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+    );
   }
 
   Color modifyColorIntensity(bool isOn, double intensity) {
@@ -234,10 +231,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget randomSendValidData() {
     return TextButton(
         onPressed: () {
-          timer = Timer.periodic(
-              const Duration(seconds: 10),
-              (Timer t) => mqtt.sendRandomValidData(
-                  client, mqtt.topicSend, mqtt.access_token));
+          timer = Timer.periodic(const Duration(seconds: 10),
+              (Timer t) => _mqttStore.sendRandomValidData());
         },
         child: const Text('valid data'));
   }
@@ -245,10 +240,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget randomSendInvalidData() {
     return TextButton(
         onPressed: () {
-          timer = Timer.periodic(
-              const Duration(seconds: 10),
-              (Timer t) => mqtt.sendRandomInvalidData(
-                  client, mqtt.topicSend, mqtt.access_token));
+          timer = Timer.periodic(const Duration(seconds: 10),
+              (Timer t) => _mqttStore.sendRandomInvalidData());
         },
         child: const Text('invalid data'));
   }
