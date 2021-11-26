@@ -72,7 +72,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         height: 20,
                       ),
                       randomSendValidData(),
-                      randomSendInvalidData()
+                      randomSendInvalidData(),
+                      stopSendRandomData()
                     ]))
               ],
             )));
@@ -244,5 +245,16 @@ class _MyHomePageState extends State<MyHomePage> {
               (Timer t) => _mqttStore.sendRandomInvalidData());
         },
         child: const Text('invalid data'));
+  }
+
+  Widget stopSendRandomData() {
+    return TextButton(
+        onPressed: () {
+          if (timer!.isActive) {
+            timer!.cancel();
+            print('Timer stopped');
+          }
+        },
+        child: const Text('Stop send random data'));
   }
 }

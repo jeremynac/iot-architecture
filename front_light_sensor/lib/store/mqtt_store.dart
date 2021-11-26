@@ -25,10 +25,10 @@ class MqttStore = _MqttStore with _$MqttStore;
 
 abstract class _MqttStore with Store {
   // final TeamStore _teamStore = TeamStore();
-  final serverAddress = "127.0.0.1";
+  final serverAddress = "192.168.1.97";
   final port = 1883;
   final Map<String, String> devices = {
-    "Device1": "DzV8P2RnMtmW9KMF0z2A",
+    "Device1": "vkaG6Mh70dxXDXPmhtkR",
     "Device2": "FpkOPclmYan2SOZgVGoV",
     "Device3": "kC2bqgpbPuAmxleJLxfk"
   };
@@ -258,7 +258,7 @@ abstract class _MqttStore with Store {
       final parsedPayload =
           MqttPublishPayload.bytesToStringAsString(payload.payload.message);
       final requestId =
-          message?.topic.substring(ThingsBoardUrls.topicRPCsub.length);
+          message?.topic.substring(ThingsBoardUrls.topicRPCid.length);
       if (requestId != null) {
         final json = jsonDecode(parsedPayload);
         final parsedMessage = MqttRpcResponse.fromJson(json);
@@ -285,7 +285,7 @@ abstract class _MqttStore with Store {
   processGetStatus(String requestId) {
     print('getStatus from server');
     final builderActive = MqttClientPayloadBuilder();
-    builderActive.addString(('{"status":"$status"}'));
+    builderActive.addString(status.toString());
     client.publishMessage(ThingsBoardUrls.topicRPCsend + requestId,
         MqttQos.exactlyOnce, builderActive.payload!);
     print(
