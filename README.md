@@ -2,7 +2,7 @@
 
 This project is emulating a smart greenhouse. It emulates several devices using flutter, react and nodejs. It deploys a thingsboard server to gather and display the data.
 
-See more in [architecture](architecture.pdf)
+Architecture document [here](architecture.pdf)
 
 # Installation
 
