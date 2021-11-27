@@ -1,0 +1,52 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Temperature / Humidity ratio",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 1,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 597,
+          "layoutY": 152
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save ratio",
+        "debugMode": false,
+        "configuration": {
+          "defaultTTL": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 305,
+          "layoutY": 149
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Calculate ratio",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return {msg: {temperatureHumidityRatio: msg.temperature / msg.humidity}, metadata: metadata, msgType: msgType};"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 1,
+        "toIndex": 0,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}

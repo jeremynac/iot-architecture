@@ -1,59 +1,11 @@
 {
-  "title": "Light 1",
+  "title": "Light 2",
   "image": null,
   "mobileHide": false,
   "mobileOrder": null,
   "configuration": {
     "description": "",
     "widgets": {
-      "2bef2472-e416-4ae2-1a30-eb10991c0a3d": {
-        "isSystemType": true,
-        "bundleAlias": "control_widgets",
-        "typeAlias": "led_indicator",
-        "type": "rpc",
-        "title": "New widget",
-        "image": null,
-        "description": null,
-        "sizeX": 2.5,
-        "sizeY": 2.5,
-        "config": {
-          "targetDeviceAliases": [],
-          "showTitle": false,
-          "backgroundColor": "#e6e7e8",
-          "color": "rgba(0, 0, 0, 0.87)",
-          "padding": "0px",
-          "settings": {
-            "requestTimeout": 500,
-            "initialValue": true,
-            "title": "Led indicator",
-            "ledColor": "#4caf50",
-            "valueAttribute": "status",
-            "retrieveValueMethod": "attribute",
-            "parseValueFunction": "return data ? true : false;",
-            "performCheckStatus": true,
-            "checkStatusMethod": "getStatus"
-          },
-          "title": "New Led indicator",
-          "dropShadow": true,
-          "enableFullscreen": false,
-          "widgetStyle": {},
-          "titleStyle": {
-            "fontSize": "16px",
-            "fontWeight": 400
-          },
-          "useDashboardTimewindow": true,
-          "showLegend": false,
-          "actions": {},
-          "decimals": 2,
-          "datasources": [],
-          "targetDeviceAliasIds": [
-            "cb492552-64b0-1c0f-9e27-bcd55986b12a"
-          ]
-        },
-        "row": 0,
-        "col": 0,
-        "id": "2bef2472-e416-4ae2-1a30-eb10991c0a3d"
-      },
       "efeacca6-e700-7a48-1a22-d71fc92ee889": {
         "isSystemType": true,
         "bundleAlias": "control_widgets",
@@ -78,7 +30,7 @@
             "title": "Knob control",
             "getValueMethod": "getIntensity",
             "setValueMethod": "setIntensity",
-            "requestPersistent": true,
+            "requestPersistent": false,
             "persistentPollingInterval": 1000
           },
           "title": "New Knob Control",
@@ -95,7 +47,7 @@
           "decimals": 2,
           "datasources": [],
           "targetDeviceAliasIds": [
-            "cb492552-64b0-1c0f-9e27-bcd55986b12a"
+            "9c1399e9-b433-a639-cb15-5518d7cc36e9"
           ]
         },
         "row": 0,
@@ -125,7 +77,7 @@
             "setValueMethod": "setStatus",
             "showOnOffLabels": true,
             "title": "Switch control",
-            "retrieveValueMethod": "timeseries",
+            "retrieveValueMethod": "rpc",
             "parseValueFunction": "return data ? true : false;",
             "convertValueFunction": "return value;",
             "valueKey": "status"
@@ -144,7 +96,7 @@
           "decimals": 2,
           "datasources": [],
           "targetDeviceAliasIds": [
-            "cb492552-64b0-1c0f-9e27-bcd55986b12a"
+            "9c1399e9-b433-a639-cb15-5518d7cc36e9"
           ]
         },
         "row": 0,
@@ -203,7 +155,7 @@
           "alarmSource": {
             "type": "entity",
             "name": null,
-            "entityAliasId": "cb492552-64b0-1c0f-9e27-bcd55986b12a",
+            "entityAliasId": "9c1399e9-b433-a639-cb15-5518d7cc36e9",
             "filterId": null,
             "dataKeys": [
               {
@@ -290,6 +242,168 @@
         "row": 0,
         "col": 0,
         "id": "7099e0e5-389c-436f-0d7f-5ad50b7fdbce"
+      },
+      "02485283-828c-f3cc-3202-97fb8a3cc72b": {
+        "isSystemType": true,
+        "bundleAlias": "digital_gauges",
+        "typeAlias": "simple_neon_gauge_justgage",
+        "type": "latest",
+        "title": "New widget",
+        "image": null,
+        "description": null,
+        "sizeX": 3,
+        "sizeY": 3,
+        "config": {
+          "datasources": [
+            {
+              "type": "entity",
+              "name": null,
+              "entityAliasId": "9c1399e9-b433-a639-cb15-5518d7cc36e9",
+              "filterId": null,
+              "dataKeys": [
+                {
+                  "name": "intensity",
+                  "type": "timeseries",
+                  "label": "intensity",
+                  "color": "#f3f021",
+                  "settings": {},
+                  "_hash": 0.8971951644527023
+                }
+              ]
+            }
+          ],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": false,
+          "backgroundColor": "#000000",
+          "color": "rgba(255, 254, 254, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "maxValue": 100,
+            "minValue": 0,
+            "donutStartAngle": 90,
+            "showValue": true,
+            "showMinMax": true,
+            "gaugeWidthScale": 1,
+            "levelColors": [],
+            "titleFont": {
+              "family": "Roboto",
+              "size": 12,
+              "style": "normal",
+              "weight": "500"
+            },
+            "labelFont": {
+              "family": "Roboto",
+              "size": 8,
+              "style": "normal",
+              "weight": "500"
+            },
+            "valueFont": {
+              "family": "Segment7Standard",
+              "style": "normal",
+              "weight": "500",
+              "size": 32
+            },
+            "minMaxFont": {
+              "family": "Segment7Standard",
+              "size": 12,
+              "style": "normal",
+              "weight": "500"
+            },
+            "neonGlowBrightness": 40,
+            "dashThickness": 1.5,
+            "gaugeType": "donut",
+            "animation": true,
+            "animationDuration": 500,
+            "animationRule": "linear",
+            "timestampFormat": "yyyy-MM-dd HH:mm:ss"
+          },
+          "title": "New Simple neon gauge",
+          "dropShadow": true,
+          "enableFullscreen": true,
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "widgetStyle": {},
+          "useDashboardTimewindow": true,
+          "showLegend": false,
+          "actions": {}
+        },
+        "row": 0,
+        "col": 0,
+        "id": "02485283-828c-f3cc-3202-97fb8a3cc72b"
+      },
+      "780384eb-4549-7812-5409-4ef6531d0915": {
+        "isSystemType": true,
+        "bundleAlias": "cards",
+        "typeAlias": "simple_card",
+        "type": "latest",
+        "title": "New widget",
+        "image": null,
+        "description": null,
+        "sizeX": 5,
+        "sizeY": 3,
+        "config": {
+          "datasources": [
+            {
+              "type": "entity",
+              "name": null,
+              "entityAliasId": "9c1399e9-b433-a639-cb15-5518d7cc36e9",
+              "filterId": null,
+              "dataKeys": [
+                {
+                  "name": "intensitiesAverage",
+                  "type": "timeseries",
+                  "label": " ",
+                  "color": "#2196f3",
+                  "settings": {},
+                  "_hash": 0.7214901566978663,
+                  "units": null,
+                  "decimals": null,
+                  "funcBody": null,
+                  "usePostProcessing": null,
+                  "postFuncBody": null
+                }
+              ]
+            }
+          ],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": true,
+          "backgroundColor": "#ff5722",
+          "color": "rgba(255, 255, 255, 0.87)",
+          "padding": "16px",
+          "settings": {
+            "labelPosition": "top"
+          },
+          "title": "Average intensity today",
+          "dropShadow": true,
+          "enableFullscreen": true,
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "units": "lux",
+          "decimals": 0,
+          "useDashboardTimewindow": true,
+          "showLegend": false,
+          "widgetStyle": {},
+          "actions": {},
+          "showTitleIcon": false,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": ""
+        },
+        "row": 0,
+        "col": 0,
+        "id": "780384eb-4549-7812-5409-4ef6531d0915"
       }
     },
     "states": {
@@ -299,16 +413,10 @@
         "layouts": {
           "main": {
             "widgets": {
-              "2bef2472-e416-4ae2-1a30-eb10991c0a3d": {
-                "sizeX": 2,
-                "sizeY": 2,
-                "row": 0,
-                "col": 0
-              },
               "efeacca6-e700-7a48-1a22-d71fc92ee889": {
                 "sizeX": 5,
-                "sizeY": 4,
-                "row": 2,
+                "sizeY": 6,
+                "row": 0,
                 "col": 0
               },
               "17275efd-f277-4216-df10-b3b544ac66c0": {
@@ -322,6 +430,18 @@
                 "sizeY": 6,
                 "row": 8,
                 "col": 0
+              },
+              "02485283-828c-f3cc-3202-97fb8a3cc72b": {
+                "sizeX": 3,
+                "sizeY": 3,
+                "row": 2,
+                "col": 5
+              },
+              "780384eb-4549-7812-5409-4ef6531d0915": {
+                "sizeX": 5,
+                "sizeY": 3,
+                "row": 8,
+                "col": 10
               }
             },
             "gridSettings": {
@@ -344,6 +464,30 @@
           "singleEntity": {
             "entityType": "DEVICE",
             "id": "2bed5da0-4178-11ec-8b72-07daa60ba2f4"
+          }
+        }
+      },
+      "1d1bb498-5d07-9ee3-e3a0-6e5a4a6ea53b": {
+        "id": "1d1bb498-5d07-9ee3-e3a0-6e5a4a6ea53b",
+        "alias": "light1",
+        "filter": {
+          "type": "singleEntity",
+          "resolveMultiple": false,
+          "singleEntity": {
+            "entityType": "DEVICE",
+            "id": "2bed5da0-4178-11ec-8b72-07daa60ba2f4"
+          }
+        }
+      },
+      "9c1399e9-b433-a639-cb15-5518d7cc36e9": {
+        "id": "9c1399e9-b433-a639-cb15-5518d7cc36e9",
+        "alias": "light 2",
+        "filter": {
+          "type": "singleEntity",
+          "resolveMultiple": false,
+          "singleEntity": {
+            "entityType": "DEVICE",
+            "id": "34ee82d0-4178-11ec-8b72-07daa60ba2f4"
           }
         }
       }
@@ -387,5 +531,5 @@
       "toolbarAlwaysOpen": true
     }
   },
-  "name": "Light 1"
+  "name": "Light 2"
 }

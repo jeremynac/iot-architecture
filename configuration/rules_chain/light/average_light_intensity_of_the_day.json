@@ -1,0 +1,82 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Average light intensity of the day",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": true,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 1,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 993,
+          "layoutY": 148
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save average",
+        "debugMode": true,
+        "configuration": {
+          "defaultTTL": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 362,
+          "layoutY": 149
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetTelemetryNode",
+        "name": "Get day intensity telemetry",
+        "debugMode": true,
+        "configuration": {
+          "latestTsKeyNames": [
+            "intensity"
+          ],
+          "fetchMode": "ALL",
+          "orderBy": "ASC",
+          "limit": 100,
+          "useMetadataIntervalPatterns": false,
+          "startInterval": 1,
+          "startIntervalTimeUnit": "DAYS",
+          "endInterval": 1,
+          "endIntervalTimeUnit": "MILLISECONDS",
+          "startIntervalPattern": "",
+          "endIntervalPattern": ""
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 660,
+          "layoutY": 139
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Calculate average",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "var intensities = JSON.parse(metadata.intensity)\nvar average = 0;\nfor (var i = 0; i < intensities.length; i++) {\n    average += Number(intensities[i].value)\n}\naverage = average / intensities.length\n\nreturn {\n    msg: {\n        intensitiesAverage: average\n    },\n    metadata: metadata,\n    msgType: msgType\n};"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 1,
+        "toIndex": 2,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 0,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}

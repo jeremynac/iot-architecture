@@ -1,0 +1,141 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Process light sensor rpc request",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 3,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 739,
+          "layoutY": 291
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Rpc call setIntensity to telemetry",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return {msg: {\"intensity\": msg.params}, metadata: metadata, msgType: \"POST_TELEMETRY_REQUEST\"};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 740,
+          "layoutY": 401
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Rpc call setStatus to telemetry",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return {msg: {\"status\": msg.params}, metadata: metadata, msgType: \"POST_TELEMETRY_REQUEST\"};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1283,
+          "layoutY": 361
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save rpc call in telemetry",
+        "debugMode": true,
+        "configuration": {
+          "defaultTTL": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 379,
+          "layoutY": 257
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsSwitchNode",
+        "name": "switch message method",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "if (msg.method == \"getStatus\") {\n    return [\"getStatus\"]\n} else if (msg.method == \"getIntensity\") {\n    return [\"getIntensity\"]\n} else if (msg.method == \"setIntensity\") {\n    return [\"setIntensity\"]\n} else if (msg.method == \"setStatus\") {\n    return [\"setStatus\"]\n} else {\n    return []\n}"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1286,
+          "layoutY": 213
+        },
+        "type": "org.thingsboard.rule.engine.rpc.TbSendRPCRequestNode",
+        "name": "Send RPC call",
+        "debugMode": true,
+        "configuration": {
+          "timeoutInSeconds": 60
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 2,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 2,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 4,
+        "type": "getIntensity"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 4,
+        "type": "getStatus"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 4,
+        "type": "setIntensity"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 4,
+        "type": "setStatus"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 1,
+        "type": "setStatus"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 0,
+        "type": "setIntensity"
+      }
+    ],
+    "ruleChainConnections": [
+      {
+        "fromIndex": 2,
+        "targetRuleChainId": {
+          "entityType": "RULE_CHAIN",
+          "id": "97218590-4b0c-11ec-a5eb-eb90756f1388"
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1579,
+          "layoutY": 359,
+          "ruleChainNodeId": "rule-chain-node-8"
+        },
+        "type": "Success"
+      }
+    ]
+  }
+}

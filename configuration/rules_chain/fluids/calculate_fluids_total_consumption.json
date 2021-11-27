@@ -1,0 +1,175 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Calculate Fluids Total consumption",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 4,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 633,
+          "layoutY": 145
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetTelemetryNode",
+        "name": "water total consumption",
+        "debugMode": true,
+        "configuration": {
+          "latestTsKeyNames": [
+            "waterTotalConsumption"
+          ],
+          "fetchMode": "LAST",
+          "orderBy": "ASC",
+          "limit": 1000,
+          "useMetadataIntervalPatterns": false,
+          "startInterval": 1,
+          "startIntervalTimeUnit": "DAYS",
+          "endInterval": 1,
+          "endIntervalTimeUnit": "MILLISECONDS",
+          "startIntervalPattern": "",
+          "endIntervalPattern": ""
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1496,
+          "layoutY": 2
+        },
+        "type": "org.thingsboard.rule.engine.action.TbLogNode",
+        "name": "log telemetry",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return 'Error calculating total consumption'"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1207,
+          "layoutY": 56
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Aggregate fluids total consumption",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return {\n    msg: {\n        fluidsTotalConsumption: (metadata\n                .weedKillerTotalConsumption ? Number(\n                    metadata\n                    .weedKillerTotalConsumption.replaceAll(\n                        \"\\\"\",\n                        \"\")) : 0) +\n            (metadata\n                .waterTotalConsumption ? Number(metadata\n                    .waterTotalConsumption.replaceAll(\"\\\"\",\n                        \"\")\n                ) : 0) + (metadata\n                .fertilizerTotalConsumption ?\n                Number(metadata\n                    .fertilizerTotalConsumption.replaceAll(\n                        \"\\\"\",\n                        \"\")) : 0)\n    },\n    metadata: metadata,\n    msgType: msgType\n};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1621,
+          "layoutY": 177
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "save time series",
+        "debugMode": false,
+        "configuration": {
+          "defaultTTL": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 319,
+          "layoutY": 146
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetTelemetryNode",
+        "name": "fertiliser total consumption",
+        "debugMode": true,
+        "configuration": {
+          "latestTsKeyNames": [
+            "fertilizerTotalConsumption"
+          ],
+          "fetchMode": "LAST",
+          "orderBy": "ASC",
+          "limit": 1000,
+          "useMetadataIntervalPatterns": false,
+          "startInterval": 1,
+          "startIntervalTimeUnit": "DAYS",
+          "endInterval": 1,
+          "endIntervalTimeUnit": "MILLISECONDS",
+          "startIntervalPattern": "",
+          "endIntervalPattern": ""
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 952,
+          "layoutY": 141
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetTelemetryNode",
+        "name": "weedKillerTotalConsumption",
+        "debugMode": true,
+        "configuration": {
+          "latestTsKeyNames": [
+            "weedKillerTotalConsumption"
+          ],
+          "fetchMode": "LAST",
+          "orderBy": "ASC",
+          "limit": 1000,
+          "useMetadataIntervalPatterns": false,
+          "startInterval": 1,
+          "startIntervalTimeUnit": "DAYS",
+          "endInterval": 1,
+          "endIntervalTimeUnit": "MILLISECONDS",
+          "startIntervalPattern": "",
+          "endIntervalPattern": ""
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 5,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 3,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 1,
+        "type": "Failure"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 0,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 5,
+        "toIndex": 2,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": [
+      {
+        "fromIndex": 3,
+        "targetRuleChainId": {
+          "entityType": "RULE_CHAIN",
+          "id": "e385d330-4627-11ec-8bef-f30b49a00e0d"
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1841,
+          "layoutY": 156,
+          "ruleChainNodeId": "rule-chain-node-8"
+        },
+        "type": "Success"
+      }
+    ]
+  }
+}

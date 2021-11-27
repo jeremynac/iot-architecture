@@ -1,0 +1,239 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Calculate total consumption across all fluid sensors",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 6,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 584,
+          "layoutY": 128
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetDeviceAttrNode",
+        "name": "Get fluid 1 consumption",
+        "debugMode": true,
+        "configuration": {
+          "deviceRelationsQuery": {
+            "fetchLastLevelOnly": false,
+            "direction": "FROM",
+            "maxLevel": 1,
+            "relationType": "Contains",
+            "deviceTypes": [
+              "Fluid sensor"
+            ]
+          },
+          "tellFailureIfAbsent": false,
+          "clientAttributeNames": [],
+          "sharedAttributeNames": [],
+          "serverAttributeNames": [],
+          "latestTsKeyNames": [
+            "fluidsTotalConsumption"
+          ],
+          "getLatestValueWithTs": false
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1009,
+          "layoutY": 114
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetDeviceAttrNode",
+        "name": "Get fluid 3 consumption",
+        "debugMode": true,
+        "configuration": {
+          "deviceRelationsQuery": {
+            "fetchLastLevelOnly": false,
+            "direction": "FROM",
+            "maxLevel": 1,
+            "relationType": "Contains",
+            "deviceTypes": [
+              "Fluid sensor 3"
+            ]
+          },
+          "tellFailureIfAbsent": false,
+          "clientAttributeNames": [],
+          "sharedAttributeNames": [],
+          "serverAttributeNames": [],
+          "latestTsKeyNames": [
+            "fluidsTotalConsumption"
+          ],
+          "getLatestValueWithTs": false
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 588,
+          "layoutY": 248
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Rename variables to fluid1",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return {msg: msg, metadata: {fluid1TotalConsumption: metadata.fluidsTotalConsumption}, msgType: msgType};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1016,
+          "layoutY": 246
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Rename variables to fluid1",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return {msg: msg, metadata: {fluid1TotalConsumption: metadata.fluid1TotalConsumption, fluid2TotalConsumption: metadata.fluid2TotalConsumption, fluid3TotalConsumption: metadata.fluidsTotalConsumption}, msgType: msgType};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 807,
+          "layoutY": 251
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Rename variables to fluid1",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return {msg: msg, metadata: {fluid1TotalConsumption: metadata.fluid1TotalConsumption, fluid2TotalConsumption: metadata.fluidsTotalConsumption}, msgType: msgType};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1616,
+          "layoutY": 110
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save timeseries",
+        "debugMode": true,
+        "configuration": {
+          "defaultTTL": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 323,
+          "layoutY": 145
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbChangeOriginatorNode",
+        "name": "To fluids sensors aggregator",
+        "debugMode": false,
+        "configuration": {
+          "originatorSource": "RELATED",
+          "relationsQuery": {
+            "fetchLastLevelOnly": false,
+            "direction": "TO",
+            "maxLevel": 1,
+            "filters": [
+              {
+                "relationType": "Contains",
+                "entityTypes": [
+                  "ASSET"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 802,
+          "layoutY": 121
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetDeviceAttrNode",
+        "name": "Get fluid 2 consumption",
+        "debugMode": true,
+        "configuration": {
+          "deviceRelationsQuery": {
+            "fetchLastLevelOnly": false,
+            "direction": "FROM",
+            "maxLevel": 1,
+            "relationType": "Contains",
+            "deviceTypes": [
+              "Fluid sensor 2"
+            ]
+          },
+          "tellFailureIfAbsent": false,
+          "clientAttributeNames": [],
+          "sharedAttributeNames": [],
+          "serverAttributeNames": [],
+          "latestTsKeyNames": [
+            "fluidsTotalConsumption"
+          ],
+          "getLatestValueWithTs": false
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1236,
+          "layoutY": 105
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Summation",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return {\n    msg: {\n        AllFluidSensorsTotalConsumption: Number(metadata\n            .fluid1TotalConsumption) + Number(metadata\n            .fluid2TotalConsumption) + Number(metadata\n            .fluid3TotalConsumption)\n    },\n    metadata: metadata,\n    msgType: \"POST_TELEMETRY_REQUEST\"\n};"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 2,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 3,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 7,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 8,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 1,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 6,
+        "toIndex": 0,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 7,
+        "toIndex": 4,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 8,
+        "toIndex": 5,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}

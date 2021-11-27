@@ -1,0 +1,184 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Calculate daily fluids consumption per type",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": true,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 0,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 330,
+          "layoutY": 133
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetTelemetryNode",
+        "name": "Get latest daily total consumption",
+        "debugMode": true,
+        "configuration": {
+          "latestTsKeyNames": [
+            "dailyTotalConsumption"
+          ],
+          "fetchMode": "FIRST",
+          "orderBy": "ASC",
+          "limit": 1000,
+          "useMetadataIntervalPatterns": false,
+          "startInterval": 1,
+          "startIntervalTimeUnit": "DAYS",
+          "endInterval": 1,
+          "endIntervalTimeUnit": "MINUTES",
+          "startIntervalPattern": "",
+          "endIntervalPattern": ""
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 646,
+          "layoutY": 21
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Check if last calculation was not today",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "if (metadata.dailyTotalConsumption === undefined) {\n    return true\n}\n\nvar previousDate = new Date(JSON.parse(metadata.dailyTotalConsumption).ts)\nvar currentDate = new Date()\nreturn !(previousDate.getFullYear() === currentDate.getFullYear() && previousDate.getMonth() === currentDate.getMonth() && previousDate.getDay() === currentDate.getDay())"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1528,
+          "layoutY": 121
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save daily fluids consumption",
+        "debugMode": true,
+        "configuration": {
+          "defaultTTL": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 924,
+          "layoutY": 129
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsSwitchNode",
+        "name": "Switch by fluid type",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "switch (msg.type) {\n    case \"water\":\n        return [\"water\"]\n    case \"fertilizer\":\n        return [\"fertilizer\"]\n    case \"weedKiller\":\n        return [\"weedKiller\"]\n    default:\n        return []\n}"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1213,
+          "layoutY": 123
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Fertiliser message",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return {\n    msg: {\n        dailyFertilizerConsumption: msg.fertilizerTotalConsumption\n    },\n    metadata: metadata,\n    msgType: msgType\n};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1216,
+          "layoutY": 222
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "WeedKiller message",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return {\n    msg: {\n        dailyWeedKillerConsumption: msg.weedKillerTotalConsumption\n    },\n    metadata: metadata,\n    msgType: msgType\n};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1214,
+          "layoutY": 26
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Water message",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return {\n    msg: {\n        dailyWaterConsumption: msg.waterTotalConsumption\n    },\n    metadata: metadata,\n    msgType: msgType\n};"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 1,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 0,
+        "toIndex": 3,
+        "type": "Failure"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 3,
+        "type": "True"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 6,
+        "type": "water"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 4,
+        "type": "fertilizer"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 5,
+        "type": "weedKiller"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 2,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 5,
+        "toIndex": 2,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 6,
+        "toIndex": 2,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": [
+      {
+        "fromIndex": 2,
+        "targetRuleChainId": {
+          "entityType": "RULE_CHAIN",
+          "id": "43143240-4b1b-11ec-a5eb-eb90756f1388"
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1850,
+          "layoutY": 123,
+          "ruleChainNodeId": "rule-chain-node-9"
+        },
+        "type": "Success"
+      }
+    ]
+  }
+}

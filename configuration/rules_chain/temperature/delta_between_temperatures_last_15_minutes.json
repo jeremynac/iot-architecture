@@ -1,0 +1,82 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": "Check if temperature difference between latest 15 minutes reading exceeds value"
+    },
+    "name": "Delta between temperatures last 15 minutes",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 2,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 625,
+          "layoutY": 146
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "check if delta > 15",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return msg.delta > 15;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 900,
+          "layoutY": 146
+        },
+        "type": "org.thingsboard.rule.engine.action.TbCreateAlarmNode",
+        "name": "delta last 10 minutes",
+        "debugMode": true,
+        "configuration": {
+          "alarmType": "General Alarm",
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;",
+          "severity": "CRITICAL",
+          "propagate": false,
+          "useMessageAlarmData": false,
+          "dynamicSeverity": false,
+          "relationTypes": []
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 288,
+          "layoutY": 147
+        },
+        "type": "org.thingsboard.rule.engine.metadata.CalculateDeltaNode",
+        "name": "Last 10 minutes",
+        "debugMode": true,
+        "configuration": {
+          "inputValueKey": "temperature",
+          "outputValueKey": "delta",
+          "useCache": true,
+          "addPeriodBetweenMsgs": true,
+          "periodValueKey": "periodInMs",
+          "round": null,
+          "tellFailureIfDeltaIsNegative": true
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 1,
+        "type": "True"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 0,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}

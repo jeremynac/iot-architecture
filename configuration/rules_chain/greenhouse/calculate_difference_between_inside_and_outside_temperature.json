@@ -1,0 +1,229 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Calculate difference between inside and outside temperature",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 6,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1418,
+          "layoutY": 250
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save temperature difference",
+        "debugMode": false,
+        "configuration": {
+          "defaultTTL": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1105,
+          "layoutY": 149
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Calculate temperature difference",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return {msg: {temperatureDifference: Math.abs(metadata.insideTemperature - metadata.outsideTemperature)}, metadata: metadata, msgType: msgType};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "Rename temperature variable to insideTemperature",
+          "layoutX": 815,
+          "layoutY": 365
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "renameInsideTemperature",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return {msg: msg, metadata: {insideTemperature: metadata.temperature, outsideTemperature: metadata.outsideTemperature}, msgType: msgType};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 571,
+          "layoutY": 366
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "renameOutsideTemperature",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return {msg: msg, metadata: {outsideTemperature: metadata.temperature}, msgType: msgType};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1752,
+          "layoutY": 148
+        },
+        "type": "org.thingsboard.rule.engine.action.TbCreateAlarmNode",
+        "name": "Trigger temperature difference alarm",
+        "debugMode": true,
+        "configuration": {
+          "alarmDetailsBuildJs": "var details = {type: \"Alarm: indoor temperature and outdoor temperature are too different\", message: msg};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;",
+          "useMessageAlarmData": false,
+          "alarmType": "General Alarm",
+          "severity": "CRITICAL",
+          "propagate": false,
+          "relationTypes": [],
+          "dynamicSeverity": false
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1416,
+          "layoutY": 147
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Check if inside and outside temperature difference is too high",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return msg.temperatureDifference > 15"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 319,
+          "layoutY": 154
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbChangeOriginatorNode",
+        "name": "To temperature",
+        "debugMode": true,
+        "configuration": {
+          "originatorSource": "RELATED",
+          "relationsQuery": {
+            "fetchLastLevelOnly": false,
+            "direction": "TO",
+            "maxLevel": 1,
+            "filters": [
+              {
+                "relationType": "Contains",
+                "entityTypes": [
+                  "ASSET"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 590,
+          "layoutY": 154
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetDeviceAttrNode",
+        "name": "Get outside temperature",
+        "debugMode": true,
+        "configuration": {
+          "deviceRelationsQuery": {
+            "fetchLastLevelOnly": false,
+            "direction": "FROM",
+            "maxLevel": 1,
+            "relationType": "Contains",
+            "deviceTypes": [
+              "Outdoor temperature sensor"
+            ]
+          },
+          "tellFailureIfAbsent": false,
+          "clientAttributeNames": [],
+          "sharedAttributeNames": [],
+          "serverAttributeNames": [],
+          "latestTsKeyNames": [
+            "temperature"
+          ],
+          "getLatestValueWithTs": false
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 858,
+          "layoutY": 148
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetDeviceAttrNode",
+        "name": "Get inside temperature",
+        "debugMode": true,
+        "configuration": {
+          "deviceRelationsQuery": {
+            "fetchLastLevelOnly": false,
+            "direction": "FROM",
+            "maxLevel": 1,
+            "relationType": "Contains",
+            "deviceTypes": [
+              "Indoor temperature sensor"
+            ]
+          },
+          "tellFailureIfAbsent": false,
+          "clientAttributeNames": [],
+          "sharedAttributeNames": [],
+          "serverAttributeNames": [],
+          "latestTsKeyNames": [
+            "temperature"
+          ],
+          "getLatestValueWithTs": false
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 1,
+        "toIndex": 5,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 0,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 1,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 8,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 5,
+        "toIndex": 4,
+        "type": "True"
+      },
+      {
+        "fromIndex": 6,
+        "toIndex": 7,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 7,
+        "toIndex": 3,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 8,
+        "toIndex": 2,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}

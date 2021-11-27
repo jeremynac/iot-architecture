@@ -1,5 +1,5 @@
 {
-  "name": "thermometer",
+  "name": "Indoor temperature sensor",
   "description": "Default device profile",
   "image": null,
   "type": "DEFAULT",

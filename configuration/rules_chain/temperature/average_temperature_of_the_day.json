@@ -1,0 +1,82 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Average temperature of the day",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 1,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 923,
+          "layoutY": 154
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save average",
+        "debugMode": false,
+        "configuration": {
+          "defaultTTL": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 279,
+          "layoutY": 146
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetTelemetryNode",
+        "name": "Get day telemetry",
+        "debugMode": true,
+        "configuration": {
+          "latestTsKeyNames": [
+            "temperature"
+          ],
+          "fetchMode": "ALL",
+          "orderBy": "ASC",
+          "limit": 100,
+          "useMetadataIntervalPatterns": false,
+          "startInterval": 1,
+          "startIntervalTimeUnit": "DAYS",
+          "endInterval": 1,
+          "endIntervalTimeUnit": "MILLISECONDS",
+          "startIntervalPattern": "",
+          "endIntervalPattern": ""
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 590,
+          "layoutY": 145
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Calculate average",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "var temperatures = JSON.parse(metadata.temperature)\nvar average = 0;\nfor (var i = 0; i < temperatures.length; i++) {\n    average += Number(temperatures[i].value)\n}\naverage = average / temperatures.length\n\nreturn {\n    msg: {\n        temperaturesAverage: average\n    },\n    metadata: metadata,\n    msgType: msgType\n};"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 1,
+        "toIndex": 2,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 0,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}
