@@ -25,10 +25,10 @@ class MqttStore = _MqttStore with _$MqttStore;
 
 abstract class _MqttStore with Store {
   // final TeamStore _teamStore = TeamStore();
-  final serverAddress = "192.168.1.97";
+  final serverAddress = "127.0.0.1"; //192.168.1.97";
   final port = 1883;
   final Map<String, String> devices = {
-    "Device1": "vkaG6Mh70dxXDXPmhtkR",
+    "Device1": "DzV8P2RnMtmW9KMF0z2A",
     "Device2": "FpkOPclmYan2SOZgVGoV",
     "Device3": "kC2bqgpbPuAmxleJLxfk"
   };
@@ -174,7 +174,7 @@ abstract class _MqttStore with Store {
     client.subscribe(ThingsBoardUrls.topicSend, MqttQos.atMostOnce);
     print('Subscribe to ${ThingsBoardUrls.topicSend} topic');
     String dataToSend =
-        '{"active": ${randomStatus.toString()}, "intensity": ${randomIntensity[index]}}';
+        '{"status": ${randomStatus.toString()}, "intensity": ${randomIntensity[index]}}';
     final builderActive = MqttClientPayloadBuilder();
     builderActive.addString(dataToSend);
     client.publishMessage(
@@ -200,7 +200,7 @@ abstract class _MqttStore with Store {
       return;
     }
     final builderActive = MqttClientPayloadBuilder();
-    builderActive.addString('{"active": $mode, "intensity": $intensity}');
+    builderActive.addString('{"status": $mode, "intensity": $intensity}');
     client.publishMessage(
         ThingsBoardUrls.topicSend, MqttQos.exactlyOnce, builderActive.payload!);
     print('Successfully update light active mode on thingsboard');
@@ -227,7 +227,7 @@ abstract class _MqttStore with Store {
     print('Subscribe to ${ThingsBoardUrls.topicSend} topic');
     final builderIntensity = MqttClientPayloadBuilder();
     builderIntensity.addString(
-        '{"active": ${status.toString()}, "intensity": ${newIntensity.toString()}}');
+        '{"status": ${status.toString()}, "intensity": ${newIntensity.toString()}}');
     client.publishMessage(ThingsBoardUrls.topicSend, MqttQos.exactlyOnce,
         builderIntensity.payload!);
     print('Succesfully update light intensity on thingsboard');
