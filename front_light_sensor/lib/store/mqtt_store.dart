@@ -27,6 +27,11 @@ abstract class _MqttStore with Store {
   // final TeamStore _teamStore = TeamStore();
   final serverAddress = "127.0.0.1"; //192.168.1.97";
   final port = 1883;
+  final Map<String, Map<String, double>> devicesLocations = {
+    "Device1": {"latitude": 48.864718, "longitude": 2.349014},
+    "Device2": {"latitude": 48.864716, "longitude": 2.349014},
+    "Device3": {"latitude": 48.864714, "longitude": 2.349014}
+  };
   final Map<String, String> devices = {
     "Device1": "DzV8P2RnMtmW9KMF0z2A",
     "Device2": "FpkOPclmYan2SOZgVGoV",
@@ -133,6 +138,8 @@ abstract class _MqttStore with Store {
     Random random = Random();
     int index = random.nextInt(2);
     int randomIntensity = random.nextInt(101);
+    double randomLatitude = random.nextInt(180) - 90;
+    double randomLongitude = random.nextInt(360) - 180;
     client.logging(on: false);
     client.keepAlivePeriod = 60;
     if (!isClientConnected ||
@@ -144,7 +151,7 @@ abstract class _MqttStore with Store {
       return;
     }
     String dataToSend =
-        '{"active": ${randomStatus[index]}, "intensity": ${randomIntensity.toString()}}';
+        '{"active": ${randomStatus[index]}, "intensity": ${randomIntensity.toString()}, "longitude": $randomLongitude, "latitude": $randomLatitude}';
     final builderActive = MqttClientPayloadBuilder();
     builderActive.addString(dataToSend);
     client.publishMessage(
@@ -157,10 +164,12 @@ abstract class _MqttStore with Store {
   sendRandomInvalidData() async {
     isLoading = true;
 
-    List<String> randomIntensity = ["true", "false"];
+    List<String> randomStatus = ["true", "false", "otherValue", "wrongValue", "tru", "fals"];
     Random random = Random();
-    int index = random.nextInt(2);
-    int randomStatus = random.nextInt(101);
+    int index = random.nextInt(6);
+    int randomIntensity = random.nextInt(10000) - 5000;
+    double randomLongitude = random.nextDouble();
+    double randomLatitude = random.nextDouble();
     client.logging(on: false);
     client.keepAlivePeriod = 60;
     if (!isClientConnected ||
@@ -174,7 +183,7 @@ abstract class _MqttStore with Store {
     client.subscribe(ThingsBoardUrls.topicSend, MqttQos.atMostOnce);
     print('Subscribe to ${ThingsBoardUrls.topicSend} topic');
     String dataToSend =
-        '{"status": ${randomStatus.toString()}, "intensity": ${randomIntensity[index]}}';
+        '{"status": ${randomStatus[index].toString()}, "intensity": $randomIntensity, "longitude": $randomLongitude, "latitude": $randomLatitude}';
     final builderActive = MqttClientPayloadBuilder();
     builderActive.addString(dataToSend);
     client.publishMessage(
@@ -200,7 +209,8 @@ abstract class _MqttStore with Store {
       return;
     }
     final builderActive = MqttClientPayloadBuilder();
-    builderActive.addString('{"status": $mode, "intensity": $intensity}');
+    builderActive.addString(
+        '{"status": $mode, "intensity": $intensity, "longitude": ${devicesLocations[currentlySelectedDeviceKey]?["longitude"]}, "latitude": ${devicesLocations[currentlySelectedDeviceKey]?["latitude"]}}');
     client.publishMessage(
         ThingsBoardUrls.topicSend, MqttQos.exactlyOnce, builderActive.payload!);
     print('Successfully update light active mode on thingsboard');
@@ -227,7 +237,7 @@ abstract class _MqttStore with Store {
     print('Subscribe to ${ThingsBoardUrls.topicSend} topic');
     final builderIntensity = MqttClientPayloadBuilder();
     builderIntensity.addString(
-        '{"status": ${status.toString()}, "intensity": ${newIntensity.toString()}}');
+        '{"status": ${status.toString()}, "intensity": ${newIntensity.toString()}, "longitude": ${devicesLocations[currentlySelectedDeviceKey]?["longitude"]}, "latitude": ${devicesLocations[currentlySelectedDeviceKey]?["latitude"]}}');
     client.publishMessage(ThingsBoardUrls.topicSend, MqttQos.exactlyOnce,
         builderIntensity.payload!);
     print('Succesfully update light intensity on thingsboard');
