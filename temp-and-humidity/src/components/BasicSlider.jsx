@@ -22,7 +22,9 @@ export default function BasicSlider ({
   temperature,
   humidity,
   onChangeTemperature,
-  onChangeHumidity
+  onUpdateServerTemperature,
+  onChangeHumidity,
+  onUpdateServerHumidity
 }) {
   return (
 
@@ -41,6 +43,7 @@ export default function BasicSlider ({
     <Grid item xs={5}>
       <Slider
           aria-label="Custom marks"
+          onChangeCommitted={(_, newValue) => onUpdateServerTemperature(newValue)}
           onChange={(_, newValue) => onChangeTemperature(newValue)}
           value={temperature}
           getAriaValueText={valuetext}
@@ -60,6 +63,7 @@ export default function BasicSlider ({
     <Grid item xs={5}>
       <Slider
           aria-label="Custom marks"
+          onChangeCommitted={(_, newValue) => onUpdateServerHumidity(newValue)}
           onChange={(_, newValue) => onChangeHumidity(newValue)}
           getAriaValueText={valuetext}
           step={10}

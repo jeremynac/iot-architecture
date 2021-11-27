@@ -59,10 +59,18 @@ export const Page = () => {
 
   const onChangeTemperature = async (increasedTemperature) => {
     setTemperature({ ...temperature, [selectedMachine]: increasedTemperature })
+  }
+
+  const onUpdateServerTemperature = async (increasedTemperature) => {
+    setTemperature({ ...temperature, [selectedMachine]: increasedTemperature })
     await updateTemperatureAndHumidity(increasedTemperature, humidity[selectedMachine], machines[selectedMachine].geolocation.longitude, machines[selectedMachine].geolocation.latitude, machines[selectedMachine].token)
   }
 
   const onChangeHumidity = async (increasedHumidity) => {
+    setHumidity({ ...humidity, [selectedMachine]: increasedHumidity })
+  }
+
+  const onUpdateServerHumidity = async (increasedHumidity) => {
     setHumidity({ ...humidity, [selectedMachine]: increasedHumidity })
     await updateTemperatureAndHumidity(temperature[selectedMachine], increasedHumidity, machines[selectedMachine].geolocation.longitude, machines[selectedMachine].geolocation.latitude, machines[selectedMachine].token)
   }
@@ -147,7 +155,7 @@ export const Page = () => {
           />
           <Box sx={{ m: 4 }} />
 
-          <BasicSlider temperature={temperature[selectedMachine]} humidity={humidity[selectedMachine]} onChangeTemperature={onChangeTemperature} onChangeHumidity={onChangeHumidity} />
+          <BasicSlider temperature={temperature[selectedMachine]} humidity={humidity[selectedMachine]} onChangeTemperature={onChangeTemperature} onChangeHumidity={onChangeHumidity} onUpdateServerHumidity={onUpdateServerHumidity} onUpdateServerTemperature={onUpdateServerTemperature} />
 
         </Grid>
 
