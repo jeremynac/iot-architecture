@@ -58,7 +58,7 @@
           "alarmSource": {
             "type": "entity",
             "name": null,
-            "entityAliasId": "122cca70-988b-fdbe-ccd2-03cf49a99890",
+            "entityAliasId": "fa425d7a-a333-eb1d-9c0f-99173e4b04ba",
             "filterId": null,
             "dataKeys": [
               {
@@ -611,7 +611,7 @@
           "color": "rgba(0, 0, 0, 0.87)",
           "padding": "8px",
           "settings": {
-            "maxValue": 60,
+            "maxValue": 100,
             "startAngle": 67.5,
             "ticksAngle": 225,
             "showBorder": true,
@@ -726,8 +726,7 @@
             "colorValueBoxRectEnd": "#666",
             "colorValueBoxBackground": "#babab2",
             "colorValueBoxShadow": "rgba(0,0,0,1)",
-            "unitTitle": "Temperature",
-            "minValue": -60
+            "unitTitle": "Temperature"
           },
           "title": "New Temperature radial gauge",
           "dropShadow": true,
@@ -752,8 +751,8 @@
               "9e74ace5-769b-367d-e857-5b20b675c251": {
                 "sizeX": 10,
                 "sizeY": 6,
-                "row": 6,
-                "col": 7
+                "row": 12,
+                "col": 0
               },
               "9d116856-c392-e213-50f5-098876ea24f4": {
                 "sizeX": 6,
@@ -764,11 +763,11 @@
               "c9898c6a-bf59-bec7-0c39-968135d4f25a": {
                 "sizeX": 9,
                 "sizeY": 6,
-                "row": 6,
-                "col": 17
+                "row": 12,
+                "col": 10
               },
               "4dddc09c-65a1-d141-8542-5b17c3a5cc0b": {
-                "sizeX": 7,
+                "sizeX": 19,
                 "sizeY": 6,
                 "row": 6,
                 "col": 0
