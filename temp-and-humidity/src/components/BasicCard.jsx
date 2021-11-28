@@ -12,21 +12,24 @@ export default function BasicCard ({ temperature, humidity, onIncreaseTemperatur
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
-        <Grid container spacing={2}>
-          <Grid item xs={4}>
-            <IconButton onClick={onReduceTemperature}>
-              <ArrowBackIosIcon />
-            </IconButton>
-          </Grid>
-          <Grid item xs={4}>
+        <Grid container spacing={1}>
+
+          <Grid item xs={6}>
+          <Typography variant="h5" component="div">
+             Temperature
+          </Typography>
             <Typography variant="h5" component="div">
-              {temperature}
+              {temperature} °C
             </Typography>
           </Grid>
-          <Grid item xs={4}>
-            <IconButton onClick={onIncreaseTemperature}>
-              <ArrowForwardIosIcon />
-            </IconButton>
+          <Grid item xs={6}>
+          <Typography variant="h5" component="div">
+             humidity levels
+          </Typography>
+            <Typography variant="h5" component="div">
+              {humidity} °C
+            </Typography>
+
           </Grid>
         </Grid>
       </CardContent>

@@ -1,0 +1,157 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Determine if too much light because of heat",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": true,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 0,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 436,
+          "layoutY": 116
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbChangeOriginatorNode",
+        "name": "To Greenhouse Asset",
+        "debugMode": true,
+        "configuration": {
+          "originatorSource": "RELATED",
+          "relationsQuery": {
+            "fetchLastLevelOnly": false,
+            "direction": "TO",
+            "maxLevel": 1,
+            "filters": [
+              {
+                "relationType": "Contains",
+                "entityTypes": [
+                  "ASSET"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 707,
+          "layoutY": 116
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetDeviceAttrNode",
+        "name": "Get temperature",
+        "debugMode": true,
+        "configuration": {
+          "deviceRelationsQuery": {
+            "fetchLastLevelOnly": false,
+            "direction": "FROM",
+            "maxLevel": 1,
+            "relationType": "Contains",
+            "deviceTypes": [
+              "Indoor temperature sensor"
+            ]
+          },
+          "tellFailureIfAbsent": false,
+          "clientAttributeNames": [],
+          "sharedAttributeNames": [],
+          "serverAttributeNames": [],
+          "latestTsKeyNames": [
+            "temperature"
+          ],
+          "getLatestValueWithTs": false
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 975,
+          "layoutY": 110
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetDeviceAttrNode",
+        "name": "Get light intensity",
+        "debugMode": true,
+        "configuration": {
+          "deviceRelationsQuery": {
+            "fetchLastLevelOnly": false,
+            "direction": "FROM",
+            "maxLevel": 1,
+            "relationType": "Contains",
+            "deviceTypes": [
+              "Light sensor"
+            ]
+          },
+          "tellFailureIfAbsent": false,
+          "clientAttributeNames": [],
+          "sharedAttributeNames": [],
+          "serverAttributeNames": [],
+          "latestTsKeyNames": [
+            "intensity"
+          ],
+          "getLatestValueWithTs": false
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1222,
+          "layoutY": 90
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Test if light is too intense and temperature is too high",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return metadata.temperature > 40 && metadata.intensity > 50;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1438,
+          "layoutY": 19
+        },
+        "type": "org.thingsboard.rule.engine.action.TbCreateAlarmNode",
+        "name": "Alarm: light is too intense",
+        "debugMode": true,
+        "configuration": {
+          "alarmDetailsBuildJs": "var details = {\n    type: \"Alarm: There is too much light!\",\n    message: JSON.stringify(msg)\n};\nreturn details;",
+          "useMessageAlarmData": false,
+          "alarmType": "General Alarm",
+          "severity": "CRITICAL",
+          "propagate": false,
+          "relationTypes": [],
+          "dynamicSeverity": false
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 1,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 2,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 3,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 4,
+        "type": "True"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "widget": {
+    "isSystemType": true,
+    "bundleAlias": "cards",
+    "typeAlias": "simple_card",
+    "type": "latest",
+    "title": "New widget",
+    "image": null,
+    "description": null,
+    "sizeX": 5,
+    "sizeY": 3,
+    "config": {
+      "datasources": [
+        {
+          "type": "entity",
+          "name": null,
+          "entityAliasId": "7ebea3a2-498d-c804-0510-97192735f2cb",
+          "filterId": null,
+          "dataKeys": [
+            {
+              "name": "temperaturesAverage",
+              "type": "timeseries",
+              "label": " ",
+              "color": "#2196f3",
+              "settings": {},
+              "_hash": 0.14418268925447153,
+              "units": null,
+              "decimals": null,
+              "funcBody": null,
+              "usePostProcessing": null,
+              "postFuncBody": null
+            }
+          ]
+        }
+      ],
+      "timewindow": {
+        "realtime": {
+          "timewindowMs": 60000
+        }
+      },
+      "showTitle": true,
+      "backgroundColor": "#ff5722",
+      "color": "rgba(255, 255, 255, 0.87)",
+      "padding": "16px",
+      "settings": {
+        "labelPosition": "top"
+      },
+      "title": "Average temperature",
+      "dropShadow": true,
+      "enableFullscreen": true,
+      "titleStyle": {
+        "fontSize": "16px",
+        "fontWeight": 400
+      },
+      "units": "°C",
+      "decimals": 0,
+      "useDashboardTimewindow": true,
+      "showLegend": false,
+      "widgetStyle": {},
+      "actions": {},
+      "showTitleIcon": false,
+      "iconColor": "rgba(0, 0, 0, 0.87)",
+      "iconSize": "24px",
+      "titleTooltip": ""
+    },
+    "row": 0,
+    "col": 0,
+    "id": "9d116856-c392-e213-50f5-098876ea24f4"
+  },
+  "aliasesInfo": {
+    "datasourceAliases": {
+      "0": {
+        "alias": "temperature1",
+        "filter": {
+          "type": "singleEntity",
+          "resolveMultiple": false,
+          "singleEntity": {
+            "entityType": "DEVICE",
+            "id": "559aebe0-4178-11ec-8b72-07daa60ba2f4"
+          }
+        }
+      }
+    },
+    "targetDeviceAliases": {}
+  },
+  "filtersInfo": {
+    "datasourceFilters": {}
+  },
+  "originalSize": {
+    "sizeX": 6,
+    "sizeY": 5
+  },
+  "originalColumns": 24
+}

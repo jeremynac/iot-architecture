@@ -1,0 +1,238 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": "Identify the fluid type and transform the telemetry message fields to have different telemetry values for different fluid types."
+    },
+    "name": "Transform fluid telemetry fields",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 1,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 842,
+          "layoutY": 48
+        },
+        "type": "org.thingsboard.rule.engine.action.TbCreateAlarmNode",
+        "name": "Invalid values",
+        "debugMode": false,
+        "configuration": {
+          "alarmDetailsBuildJs": "return {type: \"Invalid values\", message: JSON.stringify(msg)} ;",
+          "useMessageAlarmData": false,
+          "alarmType": "General Alarm",
+          "severity": "CRITICAL",
+          "propagate": false,
+          "relationTypes": [],
+          "dynamicSeverity": false
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 276,
+          "layoutY": 149
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Filter out invalid values",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "if (msg.consumedVolume < 0 || msg.consumedVolume > 100) {\n    return false;\n} else if (msg.totalVolume > 100 || msg.totalVolume < 0) {\n    return false;\n} else if (msg.totalConsumption > 100 || msg\n    .totalConsumption < 0) {\n    return false;\n} else if (msg.capacity > 100 || msg.capacity < 0) {\n    return false;\n} else if (msg.type != \"water\" && msg.type !=\n    \"fertilizer\" && msg.type != \"weedKiller\") {\n    return false;\n} else if (msg.longitude < -180 || msg.longitude > 180 ||\n    msg.latitude < -90 || msg.latitude > 90) {\n    return false\n} else if (msg.consumedVolume > msg.totalConsumption  || msg\n    .consumedVolume > msg.capacity || msg.totalVolume > msg\n    .capacity || msg.totalConsumption > msg.capacity) {\n    return false\n} else {\n    return true;\n}"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 527,
+          "layoutY": 47
+        },
+        "type": "org.thingsboard.rule.engine.action.TbLogNode",
+        "name": "Log invalid values",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return 'Fluid sensor: Invalid values'"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 533,
+          "layoutY": 214
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsSwitchNode",
+        "name": "Switch by fluid type",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "switch (msg.type) {\n    case \"water\":\n        return [\"water\"]\n    case \"fertilizer\":\n        return [\"fertilizer\"]\n    case \"weedKiller\":\n        return [\"weedKiller\"]\n    default:\n        return []\n}"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 903,
+          "layoutY": 206
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Fertiliser message",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return {\n    msg: {\n        type: msg.type,\n        fertilizerConsumedVolume: msg\n            .consumedVolume,\n        fertilizerTotalVolume: msg.totalVolume,\n        fertilizerCapacity: msg.capacity,\n        fertilizerTotalConsumption: msg\n            .totalConsumption,\n        longitude: msg.longitude,\n        latitude: msg.latitude\n    },\n    metadata: metadata,\n    msgType: msgType\n};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 908,
+          "layoutY": 290
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "WeedKiller message",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return {\n    msg: {\n        type: msg.type,\n        weedKillerConsumedVolume: msg\n            .consumedVolume,\n        weedKillerTotalVolume: msg.totalVolume,\n        weedKillerCapacity: msg.capacity,\n        weedKillerTotalConsumption: msg\n            .totalConsumption,\n        longitude: msg.longitude,\n        latitude: msg.latitude\n    },\n    metadata: metadata,\n    msgType: msgType\n};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1196,
+          "layoutY": 210
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save telemetry",
+        "debugMode": false,
+        "configuration": {
+          "defaultTTL": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 902,
+          "layoutY": 131
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Water message",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return {\n    msg: {\n        type: msg.type,\n        waterConsumedVolume: msg.consumedVolume,\n        waterTotalVolume: msg.totalVolume,\n        waterCapacity: msg.capacity,\n        waterTotalConsumption: msg\n            .totalConsumption,\n        longitude: msg.longitude,\n        latitude: msg.latitude\n    },\n    metadata: metadata,\n    msgType: msgType\n};"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 1,
+        "toIndex": 3,
+        "type": "True"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 2,
+        "type": "False"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 2,
+        "type": "Failure"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 0,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 7,
+        "type": "water"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 4,
+        "type": "fertilizer"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 5,
+        "type": "weedKiller"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 6,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 5,
+        "toIndex": 6,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 7,
+        "toIndex": 6,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": [
+      {
+        "fromIndex": 6,
+        "targetRuleChainId": {
+          "entityType": "RULE_CHAIN",
+          "id": "b9b9b800-46f9-11ec-8e43-eb90756f1388"
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1509,
+          "layoutY": 126,
+          "ruleChainNodeId": "rule-chain-node-10"
+        },
+        "type": "Success"
+      },
+      {
+        "fromIndex": 6,
+        "targetRuleChainId": {
+          "entityType": "RULE_CHAIN",
+          "id": "900a9ac0-4707-11ec-8e43-eb90756f1388"
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1503,
+          "layoutY": 295,
+          "ruleChainNodeId": "rule-chain-node-11"
+        },
+        "type": "Success"
+      },
+      {
+        "fromIndex": 6,
+        "targetRuleChainId": {
+          "entityType": "RULE_CHAIN",
+          "id": "98f11470-4b17-11ec-a5eb-eb90756f1388"
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1507,
+          "layoutY": 37,
+          "ruleChainNodeId": "rule-chain-node-12"
+        },
+        "type": "Success"
+      },
+      {
+        "fromIndex": 7,
+        "targetRuleChainId": {
+          "entityType": "RULE_CHAIN",
+          "id": "c8586dc0-4735-11ec-8e43-eb90756f1388"
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1198,
+          "layoutY": 44,
+          "ruleChainNodeId": "rule-chain-node-13"
+        },
+        "type": "Success"
+      }
+    ]
+  }
+}

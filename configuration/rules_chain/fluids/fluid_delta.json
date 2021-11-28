@@ -1,0 +1,58 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Fluid Delta",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 0,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 285,
+          "layoutY": 151
+        },
+        "type": "org.thingsboard.rule.engine.metadata.CalculateDeltaNode",
+        "name": "Evolution of total consumption same time yesterday",
+        "debugMode": true,
+        "configuration": {
+          "inputValueKey": "dailyFluidsTotalConsumption",
+          "outputValueKey": "dailyFluidsTotalConsumptionDelta",
+          "useCache": true,
+          "addPeriodBetweenMsgs": false,
+          "periodValueKey": "periodInMs",
+          "round": null,
+          "tellFailureIfDeltaIsNegative": true
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 600,
+          "layoutY": 152
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save daily consumption delta",
+        "debugMode": false,
+        "configuration": {
+          "defaultTTL": 0
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 1,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}

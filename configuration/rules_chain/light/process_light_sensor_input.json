@@ -1,0 +1,149 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Process light sensor input",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 4,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1259,
+          "layoutY": 65
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save intensity and status",
+        "debugMode": false,
+        "configuration": {
+          "defaultTTL": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "Convert intensity in rpc response to attribute",
+          "layoutX": 795,
+          "layoutY": 301
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Status rpc to telemetry",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "\n\nreturn {msg: {status: msg.response}, metadata: metadata, msgType: \"POST_TELEMETRY_REQUEST\"};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 509,
+          "layoutY": 257
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsSwitchNode",
+        "name": "Rpc request method",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "if (msg.request && msg.request.body && msg.request.body.method == \"getStatus\") {\n return [\"getStatus\"];\n} else if (msg.request && msg.request.body && msg.request.body.method == \"getIntensity\") {\n    return [\"getIntensity\"];\n} else {\n    return [];\n}"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "Convert intensity in rpc response to attribute",
+          "layoutX": 719,
+          "layoutY": 162
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Intensity rpc to telemetry",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "\n\nreturn {msg: {intensity: msg.response}, metadata: metadata, msgType: \"POST_TELEMETRY_REQUEST\"};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 269,
+          "layoutY": 149
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbMsgTypeSwitchNode",
+        "name": "type",
+        "debugMode": true,
+        "configuration": {
+          "version": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 977,
+          "layoutY": 60
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Light validity",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "if (msg.status && !(msg.status == true || msg.status == false)) {\n    return false\n} else if (msg.intensity && !(msg.intensity >= 0 || msg.intensity <= 100)) {\n    return false\n} else if (msg.latitude && !(msg.latitude >= -90 && msg.latitude <= 90)) {\n    return false\n} else if (msg.longitude && !(msg.longitude >= -180 && msg.longitude <= 80)) {\n    return false\n} else {\n    return true\n}"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 1,
+        "toIndex": 5,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 1,
+        "type": "getStatus"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 3,
+        "type": "getIntensity"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 5,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 5,
+        "type": "Post telemetry"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 2,
+        "type": "RPC Successful"
+      },
+      {
+        "fromIndex": 5,
+        "toIndex": 0,
+        "type": "True"
+      }
+    ],
+    "ruleChainConnections": [
+      {
+        "fromIndex": 0,
+        "targetRuleChainId": {
+          "entityType": "RULE_CHAIN",
+          "id": "97218590-4b0c-11ec-a5eb-eb90756f1388"
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1522,
+          "layoutY": 60,
+          "ruleChainNodeId": "rule-chain-node-8"
+        },
+        "type": "Success"
+      }
+    ]
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Light Sensor Root Chain",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 0,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 335,
+          "layoutY": 145
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbMsgTypeSwitchNode",
+        "name": "Message type",
+        "debugMode": true,
+        "configuration": {
+          "version": 0
+        }
+      }
+    ],
+    "connections": null,
+    "ruleChainConnections": [
+      {
+        "fromIndex": 0,
+        "targetRuleChainId": {
+          "entityType": "RULE_CHAIN",
+          "id": "3195e510-4722-11ec-8e43-eb90756f1388"
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 692,
+          "layoutY": 39,
+          "ruleChainNodeId": "rule-chain-node-3"
+        },
+        "type": "RPC Request to Device"
+      },
+      {
+        "fromIndex": 0,
+        "targetRuleChainId": {
+          "entityType": "RULE_CHAIN",
+          "id": "44a1d740-4722-11ec-8e43-eb90756f1388"
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 701,
+          "layoutY": 264,
+          "ruleChainNodeId": "rule-chain-node-4"
+        },
+        "type": "RPC Successful"
+      },
+      {
+        "fromIndex": 0,
+        "targetRuleChainId": {
+          "entityType": "RULE_CHAIN",
+          "id": "44a1d740-4722-11ec-8e43-eb90756f1388"
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 701,
+          "layoutY": 264,
+          "ruleChainNodeId": "rule-chain-node-4"
+        },
+        "type": "Post telemetry"
+      }
+    ]
+  }
+}

@@ -1,13 +1,28 @@
-import { Grid } from '@mui/material'
+import { Divider, Grid, Box, Text } from '@mui/material'
 import React, { useState } from 'react'
 import { sendRandomData, updateTemperatureAndHumidity } from '../api/api'
 import BasicCard from './BasicCard'
 import { MachineDrawer } from './MachinesDrawer'
+import BasicSlider from './BasicSlider'
+import { MachineCard } from './MachineCard'
+import { MachineSwitch } from './MachineSwitch'
 
-const defaultQuantities = { temperature: 100, humidity: 100 }
+import { Background } from './Background'
+import { makeStyles } from '@material-ui/core/styles'
+import '../App.scss'
+
+const defaultQuantities = { temperature: 30, humidity: 100 }
+const useStyles = makeStyles({
+  root: {
+    backgroundColor: 'black'
+  }
+})
 
 export const Page = () => {
-  const machines = [
+  const classes = useStyles()
+
+  const machines = {
+    machine1:
     {
       label: 'Indoor Temperature Sensor 1',
       token: process.env.REACT_APP_THINGSBOARD_TEMPERATURE_SENSOR_INDOOR_1_TOKEN,
@@ -16,6 +31,7 @@ export const Page = () => {
         longitude: 2.349014
       }
     },
+    machine2:
     {
       label: 'Indoor Temperature Sensor 2',
       token: process.env.REACT_APP_THINGSBOARD_TEMPERATURE_SENSOR_INDOOR_2_TOKEN,
@@ -24,6 +40,7 @@ export const Page = () => {
         longitude: 2.349014
       }
     },
+    machine3:
     {
       label: 'Outdoor Temperature Sensor 1',
       token: process.env.REACT_APP_THINGSBOARD_TEMPERATURE_SENSOR_OUTDOOR_1_TOKEN,
@@ -32,38 +49,30 @@ export const Page = () => {
         longitude: 2.349014
       }
     }
-  ]
-  const [selectedMachine, setSelectedMachine] = useState(0)
+  }
+  const [selectedMachine, setSelectedMachine] = useState('machine1')
   const [randomMode, setRandomMode] = useState(false)
   const [completelyRandomMode, setCompletelyRandomMode] = useState(false)
   const [intervalId, setIntervalId] = useState()
-  const [temperature, setTemperature] = useState(defaultQuantities.temperature)
-  const [humidity, setHumidity] = useState(defaultQuantities.humidity)
+  const [temperature, setTemperature] = useState({ machine1: defaultQuantities.temperature, machine2: defaultQuantities.temperature, machine3: defaultQuantities.temperature })
+  const [humidity, setHumidity] = useState({ machine1: defaultQuantities.humidity, machine2: defaultQuantities.humidity, machine3: defaultQuantities.humidity })
 
-  const onIncreaseTemperature = async () => {
-    const increaseAmount = 10
-    const increasedTemperature = temperature + increaseAmount
-    setTemperature(increasedTemperature)
-    await updateTemperatureAndHumidity(increasedTemperature, humidity, machines[selectedMachine].geolocation.longitude, machines[selectedMachine].geolocation.latitude, machines[selectedMachine].token)
-  }
-  const onReduceTemperature = async () => {
-    const reduceAmount = temperature - 10 < -273.5 ? temperature + 273.5 : 10
-    const reducedTemperature = temperature - reduceAmount
-    setTemperature(reducedTemperature)
-    await updateTemperatureAndHumidity(reducedTemperature, humidity, machines[selectedMachine].geolocation.longitude, machines[selectedMachine].geolocation.latitude, machines[selectedMachine].token)
+  const onChangeTemperature = async (increasedTemperature) => {
+    setTemperature({ ...temperature, [selectedMachine]: increasedTemperature })
   }
 
-  const onIncreaseHumidity = async () => {
-    const increaseAmount = 10
-    const increasedHumidity = humidity + increaseAmount
-    setHumidity(increasedHumidity)
-    await updateTemperatureAndHumidity(temperature, increasedHumidity, machines[selectedMachine].geolocation.longitude, machines[selectedMachine].geolocation.latitude, machines[selectedMachine].token)
+  const onUpdateServerTemperature = async (increasedTemperature) => {
+    setTemperature({ ...temperature, [selectedMachine]: increasedTemperature })
+    await updateTemperatureAndHumidity(increasedTemperature, humidity[selectedMachine], machines[selectedMachine].geolocation.longitude, machines[selectedMachine].geolocation.latitude, machines[selectedMachine].token)
   }
-  const onReduceHumidity = async () => {
-    const reduceAmount = 10
-    const reducedHumidity = humidity - reduceAmount
-    setHumidity(reducedHumidity)
-    await updateTemperatureAndHumidity(temperature, reducedHumidity, machines[selectedMachine].geolocation.longitude, machines[selectedMachine].geolocation.latitude, machines[selectedMachine].token)
+
+  const onChangeHumidity = async (increasedHumidity) => {
+    setHumidity({ ...humidity, [selectedMachine]: increasedHumidity })
+  }
+
+  const onUpdateServerHumidity = async (increasedHumidity) => {
+    setHumidity({ ...humidity, [selectedMachine]: increasedHumidity })
+    await updateTemperatureAndHumidity(temperature[selectedMachine], increasedHumidity, machines[selectedMachine].geolocation.longitude, machines[selectedMachine].geolocation.latitude, machines[selectedMachine].token)
   }
 
   const sendData = async (
@@ -109,30 +118,48 @@ export const Page = () => {
     }
     setCompletelyRandomMode(value)
   }
-
+  const selectClassname = async () => {
+    if (selectedMachine === 'machine1') {
+      return 'lol'
+    } else { return 'test' }
+  }
   return (
-    <div>
-      <MachineDrawer
-        selectedMachineIndex={selectedMachine}
-        onChangeMachine={setSelectedMachine}
-        machines={machines}
-        isRandomMode={randomMode}
-        onToggleRandomMode={onToggleRandomMode}
-        isCompletelyRandomMode={completelyRandomMode}
-        onToggleCompletelyRandomMode={onToggleCompletelyRandomMode}
-      />
+    <div >
+      <h1>{selectClassname}</h1>
+
       <Grid
-      container
-      spacing={0}
-      alignItems="center"
-      justifyContent="center"
-      sx={{ ml: 50, width: 1000 }}
-      style={{ minHeight: '100vh' }}
-    >
-      <Grid item xs={5}>
-        <BasicCard temperature={temperature} humidity={humidity} onIncreaseTemperature={onIncreaseTemperature} onReduceTemperature={onReduceTemperature} onIncreaseHumidity={onIncreaseHumidity} onReduceHumidity={onReduceHumidity}/>
+        container
+        classes={classes.paper }
+        alignItems="center"
+        justifyContent="center"
+        style={{ minHeight: '100vh' }}
+      >
+        <Grid item xs={3} >
+
+         <MachineSwitch isRandomMode={randomMode}
+            onToggleRandomMode={onToggleRandomMode}
+            isCompletelyRandomMode={completelyRandomMode}
+            onToggleCompletelyRandomMode={onToggleCompletelyRandomMode}/>
+            </Grid>
+            <Box sx={{ m: 4 }} />
+
+        <Grid item xs={6} >
+          <MachineCard
+            selectedMachineIndex={selectedMachine}
+            onChangeMachine={setSelectedMachine}
+            machines={machines}
+            isRandomMode={randomMode}
+            onToggleRandomMode={onToggleRandomMode}
+            isCompletelyRandomMode={completelyRandomMode}
+            onToggleCompletelyRandomMode={onToggleCompletelyRandomMode}
+          />
+          <Box sx={{ m: 4 }} />
+
+          <BasicSlider temperature={temperature[selectedMachine]} humidity={humidity[selectedMachine]} onChangeTemperature={onChangeTemperature} onChangeHumidity={onChangeHumidity} onUpdateServerHumidity={onUpdateServerHumidity} onUpdateServerTemperature={onUpdateServerTemperature} />
+
+        </Grid>
+
       </Grid>
-    </Grid>
     </div>
   )
 }

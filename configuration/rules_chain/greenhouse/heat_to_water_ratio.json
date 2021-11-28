@@ -1,0 +1,152 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": "Calculate how much water is needed relative to the heat"
+    },
+    "name": "Heat to water ratio",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 2,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1489,
+          "layoutY": 78
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgAttributesNode",
+        "name": "Save ratio",
+        "debugMode": true,
+        "configuration": {
+          "scope": "SERVER_SCOPE",
+          "notifyDevice": false
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "Compute a ratio of heat / water that is bigger if more water was needed per temperature unit",
+          "layoutX": 1276,
+          "layoutY": 162
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "compute heat / water ratio",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return {\n    msg: {\n        heatWaterRatio: (Math.abs(metadata.temperature -\n                metadata.waterConsumedVolume) / metadata\n            .waterConsumedVolume)\n    },\n    metadata: metadata,\n    msgType: \"POST_ATTRIBUTES_REQUEST\"\n};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 390,
+          "layoutY": 84
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbChangeOriginatorNode",
+        "name": "To Greenhouse",
+        "debugMode": true,
+        "configuration": {
+          "originatorSource": "RELATED",
+          "relationsQuery": {
+            "fetchLastLevelOnly": false,
+            "direction": "TO",
+            "maxLevel": 1,
+            "filters": [
+              {
+                "relationType": "Contains",
+                "entityTypes": [
+                  "ASSET"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 661,
+          "layoutY": 84
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetDeviceAttrNode",
+        "name": "Get temperature",
+        "debugMode": true,
+        "configuration": {
+          "deviceRelationsQuery": {
+            "fetchLastLevelOnly": false,
+            "direction": "FROM",
+            "maxLevel": 1,
+            "relationType": "Contains",
+            "deviceTypes": [
+              "Outdoor temperature sensor"
+            ]
+          },
+          "tellFailureIfAbsent": false,
+          "clientAttributeNames": [],
+          "sharedAttributeNames": [],
+          "serverAttributeNames": [],
+          "latestTsKeyNames": [
+            "temperature"
+          ],
+          "getLatestValueWithTs": false
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 929,
+          "layoutY": 78
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetDeviceAttrNode",
+        "name": "Get water total consumption",
+        "debugMode": true,
+        "configuration": {
+          "deviceRelationsQuery": {
+            "fetchLastLevelOnly": false,
+            "direction": "FROM",
+            "maxLevel": 1,
+            "relationType": "Contains",
+            "deviceTypes": [
+              "Fluid sensor"
+            ]
+          },
+          "tellFailureIfAbsent": false,
+          "clientAttributeNames": [],
+          "sharedAttributeNames": [],
+          "serverAttributeNames": [],
+          "latestTsKeyNames": [
+            "waterConsumedVolume"
+          ],
+          "getLatestValueWithTs": false
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 1,
+        "toIndex": 0,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 3,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 4,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 1,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}

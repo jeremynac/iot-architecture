@@ -1,0 +1,46 @@
+{
+  "name": "Fluid sensor 3",
+  "description": "",
+  "image": null,
+  "type": "DEFAULT",
+  "transportType": "COAP",
+  "provisionType": "DISABLED",
+  "defaultRuleChainId": {
+    "entityType": "RULE_CHAIN",
+    "id": "65b0f370-4174-11ec-8b72-07daa60ba2f4"
+  },
+  "defaultDashboardId": {
+    "entityType": "DASHBOARD",
+    "id": "9d29b210-4174-11ec-8b72-07daa60ba2f4"
+  },
+  "defaultQueueName": "",
+  "profileData": {
+    "configuration": {
+      "type": "DEFAULT"
+    },
+    "transportConfiguration": {
+      "type": "COAP",
+      "coapDeviceTypeConfiguration": {
+        "coapDeviceType": "DEFAULT",
+        "transportPayloadTypeConfiguration": {
+          "transportPayloadType": "JSON"
+        }
+      },
+      "clientSettings": {
+        "powerMode": "DRX",
+        "psmActivityTimer": null,
+        "edrxCycle": null,
+        "pagingTransmissionWindow": null
+      }
+    },
+    "provisionConfiguration": {
+      "type": "DISABLED",
+      "provisionDeviceSecret": null
+    },
+    "alarms": null
+  },
+  "provisionDeviceKey": null,
+  "firmwareId": null,
+  "softwareId": null,
+  "default": false
+}

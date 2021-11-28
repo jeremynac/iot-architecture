@@ -1,0 +1,48 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Fluid Sensor Root Chain",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 0,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 289,
+          "layoutY": 145
+        },
+        "type": "org.thingsboard.rule.engine.action.TbLogNode",
+        "name": "Log message",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return 'Incoming message:\\n' + JSON.stringify(msg) + '\\nIncoming metadata:\\n' + JSON.stringify(metadata);"
+        }
+      }
+    ],
+    "connections": null,
+    "ruleChainConnections": [
+      {
+        "fromIndex": 0,
+        "targetRuleChainId": {
+          "entityType": "RULE_CHAIN",
+          "id": "bd095d60-46e7-11ec-8e43-eb90756f1388"
+        },
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 557,
+          "layoutY": 142,
+          "ruleChainNodeId": "rule-chain-node-4"
+        },
+        "type": "Success"
+      }
+    ]
+  }
+}
