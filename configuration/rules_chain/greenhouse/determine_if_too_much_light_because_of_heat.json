@@ -122,7 +122,7 @@
         "configuration": {
           "alarmDetailsBuildJs": "var details = {\n    type: \"Alarm: There is too much light!\",\n    message: JSON.stringify(msg)\n};\nreturn details;",
           "useMessageAlarmData": false,
-          "alarmType": "General Alarm",
+          "alarmType": "Too much light causing too much heat",
           "severity": "CRITICAL",
           "propagate": false,
           "relationTypes": [],

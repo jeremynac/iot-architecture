@@ -33,16 +33,16 @@
           "layoutY": 146
         },
         "type": "org.thingsboard.rule.engine.action.TbCreateAlarmNode",
-        "name": "delta last 10 minutes",
+        "name": "delta last 15 minutes",
         "debugMode": true,
         "configuration": {
-          "alarmType": "General Alarm",
-          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;",
+          "alarmDetailsBuildJs": "var details = {\"type\": \"temperature delta is bigger than 15\", \"message\": \"Alarm: temperature is delta is bigger than 15 degrees\"};\nreturn details;",
+          "useMessageAlarmData": false,
+          "alarmType": "Temperature delta",
           "severity": "CRITICAL",
           "propagate": false,
-          "useMessageAlarmData": false,
-          "dynamicSeverity": false,
-          "relationTypes": []
+          "relationTypes": [],
+          "dynamicSeverity": false
         }
       },
       {
